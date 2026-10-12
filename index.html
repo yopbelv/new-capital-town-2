@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#2c5537">
+<meta name="theme-color" content="#233e99">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Capital Town 2">
@@ -20,11 +20,11 @@
 /* Layout: clinic back-office — dark green sidebar on the left, schedule grid with navy staff headers on the right. Single light look, matching the clinic's existing app. */
 :root{
   color-scheme:light;
-  --side:#2c5537; --side-2:#36663f; --side-ink:#f1f6ee; --side-line:rgba(255,255,255,.14);
+  --side:#233e99; --side-2:#2f50b8; --side-ink:#f1f6ee; --side-line:rgba(255,255,255,.14);
   --bg:#eceee9; --surface:#ffffff; --line:#d9ddd8; --frame:#1e2a28;
   --ink:#1b2420; --muted:#6c756f; --faint:#b9bfba;
-  --head:#3f5684; --head-ink:#ffffff;
-  --green:#3a7a4c; --green-ink:#ffffff; --green-soft:#e3efe5;
+  --head:#1f2f66; --head-ink:#ffffff;
+  --green:#2f55d4; --green-ink:#ffffff; --green-soft:#e6ecfc;
   --verse-bg:#fbf7dc; --verse-bd:#ebe39a;
   --danger:#b3311f; --danger-soft:#fbe4df; --amber:#b77a10; --amber-soft:#fbefd2;
   --now:#d7362a;
@@ -58,7 +58,7 @@ button:disabled{cursor:not-allowed}
 .nav button{display:flex;align-items:center;gap:12px;border:1.5px solid transparent;background:none;color:var(--side-ink);padding:10px 12px;border-radius:10px;font-weight:600;font-size:15.5px;text-align:left}
 .nav button svg{width:20px;height:20px;flex:none;opacity:.9}
 .nav button:hover{background:rgba(255,255,255,.06)}
-.nav button[aria-current="page"]{background:var(--side-2);border-color:#d9e8a6;color:#f6f9d8}
+.nav button[aria-current="page"]{background:var(--side-2);border-color:#c7d4ff;color:#ffffff}
 .sidefoot{margin-top:auto;display:flex;flex-direction:column;gap:8px;padding:12px 6px 0;border-top:1px solid var(--side-line);font-size:13px}
 .who{display:flex;align-items:center;gap:8px;font-weight:600}
 .dot{width:8px;height:8px;border-radius:50%;background:#9fdfb6;flex:none}
@@ -292,7 +292,7 @@ table.pt{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
 body.dragging,body.dragging *{cursor:grabbing!important;-webkit-user-select:none!important;user-select:none!important}
 .entry.drag-src{opacity:.3}
 .dragghost{position:fixed;z-index:90;pointer-events:none;opacity:.92;box-shadow:0 12px 28px rgba(0,0,0,.35);transform:rotate(1.5deg);border-radius:2px}
-.dropprev{position:absolute;left:3px;right:3px;border:2px dashed var(--frame);background:rgba(58,122,76,.16);z-index:4;pointer-events:none;display:flex;justify-content:center;align-items:flex-start;padding-top:2px;font-weight:800;font-size:12px;color:var(--frame);font-variant-numeric:tabular-nums}
+.dropprev{position:absolute;left:3px;right:3px;border:2px dashed var(--frame);background:rgba(47,85,212,.16);z-index:4;pointer-events:none;display:flex;justify-content:center;align-items:flex-start;padding-top:2px;font-weight:800;font-size:12px;color:var(--frame);font-variant-numeric:tabular-nums}
 .dropprev.bad{border-color:var(--danger);background:rgba(179,49,31,.12);color:var(--danger)}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:95;background:#1b2420;color:#fff;border-radius:12px;padding:10px 12px 10px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 12px 30px rgba(0,0,0,.3);max-width:calc(100% - 32px);font-weight:600}
 .toast button{border:0;background:#f5d327;color:#1b1b12;border-radius:8px;padding:6px 12px;font-weight:800}
@@ -434,6 +434,12 @@ body.dragging,body.dragging *{cursor:grabbing!important;-webkit-user-select:none
       <div class="top">
         <div class="title"><h1>Daily report</h1><h2 id="rep-label"></h2></div>
         <div class="ctrls" style="margin-left:auto">
+          <div class="seg" id="rep-mode" hidden>
+            <button type="button" data-mode="day" aria-pressed="true">Day</button>
+            <button type="button" data-mode="week" aria-pressed="false">Week</button>
+            <button type="button" data-mode="cutoff" aria-pressed="false">Cutoff</button>
+            <button type="button" data-mode="month" aria-pressed="false">Month</button>
+          </div>
           <button class="ibtn" id="rprev" aria-label="Previous day">‹</button>
           <input type="date" id="rep-pick" aria-label="Report date">
           <button class="ibtn" id="rnext" aria-label="Next day">›</button>
@@ -465,7 +471,7 @@ body.dragging,body.dragging *{cursor:grabbing!important;-webkit-user-select:none
         <p class="err" id="sav-err" hidden style="padding:0 16px 10px"></p>
         <div class="tablewrap"><table class="pt" id="sav-table"></table></div>
       </div>
-      <div class="panel"><h3>Notes for the day</h3>
+      <div class="panel" id="rep-note-panel"><h3>Notes for the day</h3>
         <div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px">
           <textarea id="day-note" rows="4" maxlength="3000" placeholder="Anything to remember about today: cash count, issues, reminders for tomorrow…" style="border:1px solid var(--line);border-radius:9px;padding:10px;background:#fafbf9;width:100%;resize:vertical"></textarea>
           <div style="display:flex;align-items:center;gap:10px"><button type="button" class="btn primary" id="day-note-save">Save note</button><span class="muted" id="day-note-msg"></span></div>
@@ -887,7 +893,7 @@ function subscribeWeek(){if(state.weekKey!==weekStart(state.date))state.week={};
 function stopWeek(){state.weekKey=""}
 let refreshTimer=null;
 function refreshSoon(){clearTimeout(refreshTimer);refreshTimer=setTimeout(refreshNow,250)}
-function refreshNow(){if(!state.token||state.dragging)return;loadDay();if(state.view==="week")loadWeek();if(state.tab==="perf")loadPerf();if(state.tab==="notes"&&$("note-modal").hidden)loadNotes()}
+function refreshNow(){if(!state.token||state.dragging)return;loadDay();if(state.view==="week")loadWeek();if(state.tab==="perf")loadPerf();if(state.tab==="report"&&curRepMode()!=="day")loadRepRange();if(state.tab==="notes"&&$("note-modal").hidden)loadNotes()}
 // live: each screen checks for changes every 10 seconds, when it comes back into view, and right after saving
 let channel=null;
 function startLive(){
@@ -1089,8 +1095,35 @@ async function deleteService(id){
 
 /* ---------- daily report ---------- */
 let repTab="clients",noteDirty=false,noteTimer=null;const moneyDelArm={};
+let repMode="day",repRange=null,repSeq=0;
+function stepAnchor(mode,a,dir){const d=pdate(a);
+  if(mode==="day")return addDays(a,dir);
+  if(mode==="week")return addDays(a,7*dir);
+  if(mode==="month")return dstr(new Date(d.getFullYear(),d.getMonth()+dir,1));
+  const first=d.getDate()<=15;
+  if(dir>0)return first?dstr(new Date(d.getFullYear(),d.getMonth(),16)):dstr(new Date(d.getFullYear(),d.getMonth()+1,1));
+  return first?dstr(new Date(d.getFullYear(),d.getMonth()-1,16)):dstr(new Date(d.getFullYear(),d.getMonth(),1));
+}
+function curRepMode(){return state.role==="admin"?repMode:"day"}
+async function loadRepRange(){
+  const mode=curRepMode();if(mode==="day"||!state.token)return;
+  const range=perfRange(mode,state.date),key=mode+"|"+range.join("|"),seq=++repSeq;
+  if(!repRange||repRange.key!==key)repRange={key,range,days:null};
+  try{const r=await rpcAuthed("sched_load",{p_from:range[0],p_to:range[1]});
+    if(seq!==repSeq)return;applyConfig(r);
+    const days={};for(let d=range[0];d<=range[1];d=addDays(d,1))days[d]=buildDay(r,d);
+    repRange={key,range,days};if(state.tab==="report")renderReport();
+  }catch(e){if(seq===repSeq&&state.tab==="report"){$("rep-table").innerHTML='<tbody><tr class="emptyrow"><td>Couldn\'t load this period. '+esc(friendly(e))+'</td></tr></tbody>'}}
+}
 function moneyList(map){return Object.entries(map||{}).filter(([,v])=>v&&typeof v.amount==="number").map(([id,v])=>({id,...v})).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0))}
-function drawMoney(p,list,flags,total,empty){
+function drawMoney(p,list,flags,total,empty,isRange){
+  if(isRange){
+    let h='<thead><tr><th>Date</th><th>Description</th><th class="num">Amount</th><th></th></tr></thead><tbody>';
+    if(!list.length)h+='<tr class="emptyrow"><td colspan="4">'+empty+'</td></tr>';
+    for(const x of list)h+='<tr><td class="muted">'+pdate(x.d).toLocaleDateString("en-PH",{weekday:"short",month:"short",day:"numeric"})+'</td><td style="white-space:normal"><b>'+esc(x.desc)+'</b>'+(x.createdBy?' <span class="muted">· '+esc(x.createdBy)+'</span>':'')+'</td><td class="num">'+money(x.amount)+'</td><td></td></tr>';
+    $(p+"-table").innerHTML=h+'</tbody>'+(list.length?'<tfoot><tr><td colspan="2">Total</td><td class="num">'+money(total)+'</td><td></td></tr></tfoot>':'');
+    return;
+  }
   let h='<thead><tr><th>Added</th><th>Description</th><th class="num">Amount</th><th></th></tr></thead><tbody>';
   if(!list.length)h+='<tr class="emptyrow"><td colspan="4">'+empty+'</td></tr>';
   for(const x of list){const f=flags[x.id];
@@ -1116,22 +1149,41 @@ function saveNote(){
 }
 function renderReport(){
   if(!(state.role==="admin"||state.role==="receptionist")){$("rep-stats").innerHTML="";$("rep-table").innerHTML='<tbody><tr class="emptyrow"><td>The daily report is for admins and receptionists.</td></tr></tbody>';return}
-  $("rep-label").textContent=longDateY(state.date);$("rep-pick").value=state.date;
-  const day=mergedDay(state.date);
-  const rows=Object.entries(day.entries).filter(([,e])=>e&&e.kind==="client").map(([id,e])=>({id,e,c:colorOf(e),b:billOf(e)})).sort((a,b)=>a.e.start-b.e.start||staffName(a.e.staff).localeCompare(staffName(b.e.staff)));
+  const mode=curRepMode(),isRange=mode!=="day";
+  $("rep-mode").hidden=state.role!=="admin";
+  $("rep-mode").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.mode===mode)));
+  const unit={day:"day",week:"week",cutoff:"cutoff",month:"month"}[mode];
+  $("rprev").setAttribute("aria-label","Previous "+unit);$("rnext").setAttribute("aria-label","Next "+unit);
+  $("rep-pick").value=state.date;
+  let dates=[state.date],day=mergedDay(state.date);
+  if(isRange){
+    const range=perfRange(mode,state.date),key=mode+"|"+range.join("|");
+    $("rep-label").textContent=perfLabel(mode,range);
+    if(!repRange||repRange.key!==key||!repRange.days){
+      $("rep-stats").innerHTML="";$("rep-table").innerHTML='<tbody><tr class="emptyrow"><td>Loading…</td></tr></tbody>';
+      if(!repRange||repRange.key!==key)loadRepRange();return}
+    dates=[];for(let d=range[0];d<=range[1];d=addDays(d,1))dates.push(d);
+  }else $("rep-label").textContent=longDateY(state.date);
+  const dayOf=d=>isRange?mergedDay(d,repRange.days[d]||{}):day;
+  const rows=[],exps=[],savs=[];
+  for(const d of dates){const md=dayOf(d);
+    for(const [id,e] of Object.entries(md.entries))if(e&&e.kind==="client")rows.push({id,d,e,c:colorOf(e),b:billOf(e)});
+    for(const x of moneyList(md.expenses))exps.push({...x,d});
+    for(const x of moneyList(md.savings))savs.push({...x,d});}
+  rows.sort((a,b)=>a.d.localeCompare(b.d)||a.e.start-b.e.start||staffName(a.e.staff).localeCompare(staffName(b.e.staff)));
+  for(const id of ["exp-form","sav-form","rep-note-panel"])$(id).hidden=isRange;
   const seen=rows.filter(r=>r.c.counts),missed=rows.filter(r=>!r.c.counts);
   const paidRows=seen.filter(r=>r.e.paid),unpaidRows=seen.filter(r=>!r.e.paid);
   const T=paidRows.reduce((a,r)=>{a.sub+=r.b.sub;a.disc+=r.b.disc;a.total+=r.b.total;a.tip+=r.b.tip;return a},{sub:0,disc:0,total:0,tip:0});
   const U=unpaidRows.reduce((a,r)=>a+r.b.total,0);
-  const exps=moneyList(day.expenses),savs=moneyList(day.savings);
   const eT=exps.reduce((a,x)=>a+x.amount,0),sT=savs.reduce((a,x)=>a+x.amount,0);
   $("rep-stats").innerHTML='<div class="stat"><small>Clients booked</small><b>'+seen.length+'</b></div><div class="stat" style="border-color:#7a4bc2"><small style="color:#7a4bc2">Paid · earnings</small><b>'+money(T.total)+'</b><small>'+paidRows.length+' paid</small></div><div class="stat"><small>Waiting to be paid</small><b style="color:'+(U?"var(--amber)":"inherit")+'">'+money(U)+'</b><small>'+unpaidRows.length+' not yet paid</small></div><div class="stat"><small>Discounts given</small><b>'+money(T.disc)+'</b></div><div class="stat"><small>Tips</small><b>'+money(T.tip)+'</b></div>'+
     '<div class="stat"><small>By payment method</small>'+PAY_METHODS.concat([{id:"",label:"Not recorded"}]).map(m=>{const amt=paidRows.filter(r=>(r.e.payMethod||"")===m.id).reduce((a,r)=>a+r.b.total,0);return (amt||m.id)?'<div style="display:flex;justify-content:space-between;gap:8px;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums"><span>'+esc(m.label)+'</span><span>'+money(amt)+'</span></div>':''}).join("")+'</div>'+
     '<div class="stat"><small>Expenses</small><b>'+money(eT)+'</b></div><div class="stat"><small>Savings set aside</small><b>'+money(sT)+'</b></div><div class="stat" title="Paid earnings minus expenses and savings. Tips not included."><small>Left after expenses + savings</small><b style="color:'+(T.total-eT-sT<0?"var(--danger)":"inherit")+'">'+money(T.total-eT-sT)+'</b></div>';
   $("rep-tabs").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.rt===repTab)));
   for(const k of ["clients","expenses","savings"])$("rt-"+k).hidden=k!==repTab;
-  drawMoney("exp",exps,day.moneyFlags,eT,"No expenses added for this day yet.");
-  drawMoney("sav",savs,day.moneyFlags,sT,"Nothing set aside for this day yet.");
+  drawMoney("exp",exps,day.moneyFlags,eT,isRange?"No expenses in this period.":"No expenses added for this day yet.",isRange);
+  drawMoney("sav",savs,day.moneyFlags,sT,isRange?"Nothing set aside in this period.":"Nothing set aside for this day yet.",isRange);
   const ta=$("day-note");
   if(document.activeElement!==ta&&!noteDirty)ta.value=day.dayNote||"";
   if(!noteDirty)$("day-note-msg").textContent=day.noteFlag==="pending"?"Saving…":day.noteFlag==="failed"?"Not saved yet. Tap the red status at the top of Schedule to retry.":day.dayNote?"Saved":"";
@@ -1141,14 +1193,15 @@ function renderReport(){
     if(entryNeedles(e)&&(e.needlingBy||[]).length)s+='<small class="nd">Needling: '+esc(e.needlingBy.map(x=>x==="other"?"Other":staffName(x)).join(", "))+'</small>';
     if(e.notes)s+='<small>⚠ '+esc(e.notes.split("\n")[0])+'</small>';return s};
   const discTxt=(e,b)=>b.disc?'−'+money(b.disc)+(e.discount&&e.discount.type==="pct"?' <span class="muted">('+e.discount.amt+'%)</span>':''):'<span class="muted">—</span>';
-  const row=(r,unc)=>'<tr class="'+(unc?"unc":r.e.paid?"":"unpaid")+'"><td>'+fmtTime(r.e.start)+'</td><td><b>'+esc(r.e.name)+'</b>'+(r.e.contact?'<small style="display:block" class="muted">'+esc(r.e.contact)+'</small>':'')+'</td><td>'+esc(staffName(r.e.staff))+'</td><td class="svcs">'+svcCell(r.e)+'</td><td><span class="chipc" style="background:'+(r.e.paid?PAID_BG:r.c.bg)+'"></span>'+esc(r.c.label)+(unc?'':r.e.paid?'<span class="paidchip">✓ Paid</span><span class="methodtag">'+esc(payLabel(r.e.payMethod))+'</span>':'<span class="unpaidchip">Unpaid</span>')+(r.e.nextVisit&&nextVisitText(r.e.nextVisit)?'<span class="nextvisit">Next: '+esc(nextVisitText(r.e.nextVisit))+'</span>':'')+'</td>'+
+  const row=(r,unc)=>'<tr class="'+(unc?"unc":r.e.paid?"":"unpaid")+'">'+(isRange?'<td class="muted">'+pdate(r.d).toLocaleDateString("en-PH",{weekday:"short",month:"short",day:"numeric"})+'</td>':'')+'<td>'+fmtTime(r.e.start)+'</td><td><b>'+esc(r.e.name)+'</b>'+(r.e.contact?'<small style="display:block" class="muted">'+esc(r.e.contact)+'</small>':'')+'</td><td>'+esc(staffName(r.e.staff))+'</td><td class="svcs">'+svcCell(r.e)+'</td><td><span class="chipc" style="background:'+(r.e.paid?PAID_BG:r.c.bg)+'"></span>'+esc(r.c.label)+(unc?'':r.e.paid?'<span class="paidchip">✓ Paid</span><span class="methodtag">'+esc(payLabel(r.e.payMethod))+'</span>':'<span class="unpaidchip">Unpaid</span>')+(r.e.nextVisit&&nextVisitText(r.e.nextVisit)?'<span class="nextvisit">Next: '+esc(nextVisitText(r.e.nextVisit))+'</span>':'')+'</td>'+
     (unc?'<td class="num" colspan="4">Not billed</td>':'<td class="num">'+money(r.b.sub)+'</td><td class="num">'+discTxt(r.e,r.b)+'</td><td class="num"><b>'+money(r.b.total)+'</b></td><td class="num">'+(r.b.tip?money(r.b.tip):'<span class="muted">—</span>')+'</td>')+'</tr>';
-  let h='<thead><tr><th>Time</th><th>Client</th><th>Therapist</th><th>Services</th><th>Status</th><th class="num">Subtotal</th><th class="num">Discount</th><th class="num">Total bill</th><th class="num">Tip</th></tr></thead><tbody>';
-  if(!rows.length)h+='<tr class="emptyrow"><td colspan="9">No clients booked on this day.</td></tr>';
+  const nc=isRange?10:9;
+  let h='<thead><tr>'+(isRange?'<th>Date</th>':'')+'<th>Time</th><th>Client</th><th>Therapist</th><th>Services</th><th>Status</th><th class="num">Subtotal</th><th class="num">Discount</th><th class="num">Total bill</th><th class="num">Tip</th></tr></thead><tbody>';
+  if(!rows.length)h+='<tr class="emptyrow"><td colspan="'+nc+'">'+(isRange?'No clients booked in this period.':'No clients booked on this day.')+'</td></tr>';
   h+=seen.map(r=>row(r,false)).join("");
-  if(missed.length)h+='<tr><td colspan="9" class="subhead">Not counted ('+missed.length+')</td></tr>'+missed.map(r=>row(r,true)).join("");
+  if(missed.length)h+='<tr><td colspan="'+nc+'" class="subhead">Not counted ('+missed.length+')</td></tr>'+missed.map(r=>row(r,true)).join("");
   h+='</tbody>';
-  if(seen.length)h+='<tfoot><tr><td colspan="5">Paid total · '+paidRows.length+' of '+seen.length+(seen.length===1?' client':' clients')+'</td><td class="num">'+money(T.sub)+'</td><td class="num">−'+money(T.disc)+'</td><td class="num">'+money(T.total)+'</td><td class="num">'+money(T.tip)+'</td></tr></tfoot>';
+  if(seen.length)h+='<tfoot><tr><td colspan="'+(isRange?6:5)+'">Paid total · '+paidRows.length+' of '+seen.length+(seen.length===1?' client':' clients')+'</td><td class="num">'+money(T.sub)+'</td><td class="num">−'+money(T.disc)+'</td><td class="num">'+money(T.total)+'</td><td class="num">'+money(T.tip)+'</td></tr></tfoot>';
   $("rep-table").innerHTML=h;
   $("rep-hint").textContent="Only sessions marked Paid count toward earnings and totals. Unpaid sessions show their bill in grey until someone clicks Mark as paid. Tips are listed separately and are not part of the bill.";
 }
@@ -1541,11 +1594,12 @@ function drawPerf(range,days){
   }
   const sv=Object.entries(bySvc).sort((a,b)=>b[1].n-a[1].n), ad=Object.values(byAddon).sort((a,b)=>b.qty-a.qty);
   const val=(rev,priced)=>rev?peso(rev)+(priced?"":" +"):'<span class="muted">—</span>';
-  $("perf-svc").innerHTML='<thead><tr><th>Service</th><th class="num">Count</th><th class="num">Paid value</th></tr></thead><tbody>'+
-    '<tr><td colspan="3" class="subhead">Main services</td></tr>'+
-    (sv.length?sv.map(([n,b])=>'<tr><td><b>'+esc(n)+'</b></td><td class="num">'+b.n+' clients</td><td class="num">'+val(b.rev,b.priced)+'</td></tr>').join(""):'<tr class="emptyrow"><td colspan="3">No clients in this period yet.</td></tr>')+
-    '<tr><td colspan="3" class="subhead">Additional services</td></tr>'+
-    (ad.length?ad.map(b=>'<tr><td><b>'+esc(b.name)+'</b></td><td class="num">'+b.qty+' '+esc(b.qty===1?b.unit:plural(b.unit))+'</td><td class="num">'+val(b.rev,b.priced)+'</td></tr>').join(""):'<tr class="emptyrow"><td colspan="3">No additional services in this period.</td></tr>')+'</tbody>';
+  const showVal=state.role==="admin";
+  $("perf-svc").innerHTML='<thead><tr><th>Service</th><th class="num">Count</th>'+(showVal?'<th class="num">Paid value</th>':'')+'</tr></thead><tbody>'+
+    '<tr><td colspan="'+(showVal?3:2)+'" class="subhead">Main services</td></tr>'+
+    (sv.length?sv.map(([n,b])=>'<tr><td><b>'+esc(n)+'</b></td><td class="num">'+b.n+' clients</td>'+(showVal?'<td class="num">'+val(b.rev,b.priced)+'</td>':'')+'</tr>').join(""):'<tr class="emptyrow"><td colspan="'+(showVal?3:2)+'">No clients in this period yet.</td></tr>')+
+    '<tr><td colspan="'+(showVal?3:2)+'" class="subhead">Additional services</td></tr>'+
+    (ad.length?ad.map(b=>'<tr><td><b>'+esc(b.name)+'</b></td><td class="num">'+b.qty+' '+esc(b.qty===1?b.unit:plural(b.unit))+'</td>'+(showVal?'<td class="num">'+val(b.rev,b.priced)+'</td>':'')+'</tr>').join(""):'<tr class="emptyrow"><td colspan="'+(showVal?3:2)+'">No additional services in this period.</td></tr>')+'</tbody>';
   // dry needling by staff
   const cols=Object.entries(needleCols);
   // include current needling add-ons even if unused, so the columns are stable
@@ -1572,8 +1626,8 @@ function drawPerf(range,days){
 
 /* ---------- accounts & sign-in (checked by the server) ---------- */
 const ROLE_LABEL={admin:"Admin",receptionist:"Receptionist",staff:"Staff"};
-const ROLE_SUB={admin:"Sees everything",receptionist:"Schedule, services and daily report",staff:"Schedule only · view only"};
-const ROLE_TABS={admin:["cal","svc","report","perf","colors","users"],receptionist:["cal","svc","report"],staff:["cal"]};
+const ROLE_SUB={admin:"Sees everything",receptionist:"Schedule, services, daily report and patient counts",staff:"Schedule and patient counts · view only"};
+const ROLE_TABS={admin:["cal","svc","report","perf","colors","users"],receptionist:["cal","svc","report","perf"],staff:["cal","perf"]};
 const SESSION_KEY="stretchlab-session-v2";
 let pendingAdmin=null,usrEditing=null,usrDelArm=null;
 function userList(){return Object.entries(state.users||{}).filter(([,u])=>u&&u.name).map(([id,u])=>({id,...u})).sort((a,b)=>a.name.localeCompare(b.name))}
@@ -1745,8 +1799,9 @@ $("m-addons").onclick=ev=>{const b=ev.target.closest("[data-addon]");if(!b||b.di
   drawAddons()};
 $("m-needle-by").onchange=ev=>{const c=ev.target;if(c.type!=="checkbox")return;if(c.checked)M.needleBy.add(c.value);else M.needleBy.delete(c.value)};
 for(const id of ["m-disc","m-disc-type","m-tip"])$(id).addEventListener("input",()=>{updateBill();updatePaidUI()});
-$("rprev").onclick=()=>goDate(addDays(state.date,-1));
-$("rnext").onclick=()=>goDate(addDays(state.date,1));
+$("rprev").onclick=()=>goDate(stepAnchor(curRepMode(),state.date,-1));
+$("rnext").onclick=()=>goDate(stepAnchor(curRepMode(),state.date,1));
+$("rep-mode").onclick=ev=>{const b=ev.target.closest("[data-mode]");if(!b||state.role!=="admin")return;repMode=b.dataset.mode;repRange=null;renderReport()};
 $("rtoday").onclick=()=>goDate(todayStr());
 $("rep-pick").onchange=e=>goDate(e.target.value);
 $("rep-tabs").onclick=ev=>{const b=ev.target.closest("[data-rt]");if(b){repTab=b.dataset.rt;renderReport()}};
