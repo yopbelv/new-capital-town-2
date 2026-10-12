@@ -1,0 +1,1917 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2c5537">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Capital Town 2">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232c5537'/%3E%3Cpath d='M14 10v16a10 10 0 0 0 20 0V10M24 36v8a12 12 0 0 0 24 0v-5' fill='none' stroke='%23f1f6ee' stroke-width='5' stroke-linecap='round'/%3E%3Ccircle cx='48' cy='32' r='5' fill='%23f1f6ee'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="manifest" href="manifest.json">
+<title>Stretch Lab Schedule · NEW Capital Town 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Figtree:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: clinic back-office — dark green sidebar on the left, schedule grid with navy staff headers on the right. Single light look, matching the clinic's existing app. */
+:root{
+  color-scheme:light;
+  --side:#2c5537; --side-2:#36663f; --side-ink:#f1f6ee; --side-line:rgba(255,255,255,.14);
+  --bg:#eceee9; --surface:#ffffff; --line:#d9ddd8; --frame:#1e2a28;
+  --ink:#1b2420; --muted:#6c756f; --faint:#b9bfba;
+  --head:#3f5684; --head-ink:#ffffff;
+  --green:#3a7a4c; --green-ink:#ffffff; --green-soft:#e3efe5;
+  --verse-bg:#fbf7dc; --verse-bd:#ebe39a;
+  --danger:#b3311f; --danger-soft:#fbe4df; --amber:#b77a10; --amber-soft:#fbefd2;
+  --now:#d7362a;
+  --f-serif:"Libre Baskerville",Georgia,"Times New Roman",serif;
+  --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --slot:30px;
+}
+[hidden]{display:none!important}
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.4}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+button:disabled{cursor:not-allowed}
+:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+
+.shell{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100%}
+
+/* sidebar */
+.side{background:var(--side);color:var(--side-ink);padding:18px 14px;display:flex;flex-direction:column;gap:16px;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:10px;padding:0 6px 16px;border-bottom:1px solid var(--side-line)}
+.logo{width:40px;height:40px;border-radius:10px;background:var(--side-2);display:grid;place-items:center;flex:none}
+.logo svg{width:22px;height:22px}
+.branchname{display:block;font-family:var(--f-body);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.8;margin-top:3px}
+.brand b{font-family:var(--f-serif);font-weight:400;font-size:17px;line-height:1.2}
+.nav{display:flex;flex-direction:column;gap:4px}
+.nav button{display:flex;align-items:center;gap:12px;border:1.5px solid transparent;background:none;color:var(--side-ink);padding:10px 12px;border-radius:10px;font-weight:600;font-size:15.5px;text-align:left}
+.nav button svg{width:20px;height:20px;flex:none;opacity:.9}
+.nav button:hover{background:rgba(255,255,255,.06)}
+.nav button[aria-current="page"]{background:var(--side-2);border-color:#d9e8a6;color:#f6f9d8}
+.sidefoot{margin-top:auto;display:flex;flex-direction:column;gap:8px;padding:12px 6px 0;border-top:1px solid var(--side-line);font-size:13px}
+.who{display:flex;align-items:center;gap:8px;font-weight:600}
+.dot{width:8px;height:8px;border-radius:50%;background:#9fdfb6;flex:none}
+.sidefoot small{opacity:.75}
+
+/* main */
+.main{padding-inline:24px;padding-block:22px 32px;min-width:0}
+.view{display:flex;flex-direction:column;gap:14px}
+.top{display:flex;align-items:center;gap:16px 24px;flex-wrap:wrap}
+.title h1{font-family:var(--f-serif);font-weight:700;font-size:21px;margin:0}
+.title h2{font-size:22px;font-weight:700;margin:2px 0 0;letter-spacing:-.01em}
+.title p{margin:4px 0 0;color:var(--muted);max-width:62ch}
+.verse{flex:1 1 300px;max-width:560px;margin-inline:auto;background:var(--verse-bg);border:1.5px solid var(--verse-bd);border-radius:12px;padding:8px 16px;text-align:center}
+.verse q{display:block;font-style:italic;font-size:14px}
+.verse small{display:block;color:var(--muted);font-weight:600;font-size:12px;margin-top:2px}
+.ctrls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px}
+.seg button{border:0;background:none;border-radius:8px;padding:7px 16px;font-weight:700;color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--green);color:var(--green-ink)}
+.ibtn{width:42px;height:42px;border:1px solid var(--line);background:var(--surface);border-radius:10px;font-size:18px;display:grid;place-items:center}
+.ibtn:hover{border-color:var(--green)}
+input[type=date]{height:42px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:0 12px;font-size:16px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:7px 14px;font-weight:700;min-height:36px}
+.btn:hover{border-color:var(--green)}
+.btn:disabled{opacity:.45}
+.btn.primary{background:var(--green);border-color:var(--green);color:var(--green-ink)}
+.btn.ghost{background:transparent}
+.btn.danger{color:var(--danger);border-color:var(--danger)}
+.btn.danger.confirm{background:var(--danger);color:#fff}
+.btn.sm{min-height:30px;padding:4px 10px;font-size:13px}
+
+.bar2{display:flex;align-items:center;gap:10px 18px;flex-wrap:wrap}
+.cap{display:flex;align-items:baseline;gap:6px;font-weight:700;font-variant-numeric:tabular-nums}
+.cap b{font-size:18px}
+.cap small{color:var(--muted);font-weight:600}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;font-size:12.5px;font-weight:700;border:1px solid var(--line);background:var(--surface);white-space:nowrap}
+.pill .dot{background:var(--muted)}
+.pill.ok .dot{background:var(--green)}
+.pill.busy{background:var(--amber-soft);border-color:var(--amber);color:var(--amber)}
+.pill.busy .dot{background:var(--amber);animation:pulse 1s infinite}
+.pill.bad{background:var(--danger-soft);border-color:var(--danger);color:var(--danger);cursor:pointer}
+.pill.bad .dot{background:var(--danger)}
+@keyframes pulse{50%{opacity:.3}}
+@media (prefers-reduced-motion:reduce){.pill.busy .dot{animation:none}}
+.legend{display:flex;gap:6px 12px;flex-wrap:wrap;margin-left:auto;font-size:12px;font-weight:600;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:14px;height:14px;border-radius:3px;display:inline-block;border:1px solid rgba(0,0,0,.12)}
+.notice{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 14px}
+.notice.bad{border-color:var(--danger);background:var(--danger-soft);color:var(--danger);font-weight:600}
+
+/* grid */
+.gridwrap{overflow:auto;max-height:calc(100vh - 200px);min-height:420px;background:var(--surface);border:3px solid var(--frame);border-radius:8px}
+.grid{display:grid;grid-template-columns:120px repeat(var(--cols,6),minmax(160px,1fr));min-width:calc(120px + var(--cols,6)*160px);position:relative}
+.corner,.colhead{position:sticky;top:0;z-index:5;border-bottom:3px solid var(--frame)}
+.corner{left:0;z-index:7;background:var(--surface);border-right:3px solid var(--frame)}
+.colhead{background:var(--head);color:var(--head-ink);border-left:2px solid var(--frame);padding:10px 8px 9px;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.colhead b{font-size:17px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.colhead .cnt{font-size:11.5px;font-weight:600;opacity:.85;font-variant-numeric:tabular-nums}
+.hpills{display:flex;gap:4px;flex-wrap:wrap;justify-content:center}
+.hp{border:1px solid rgba(255,255,255,.55);background:rgba(255,255,255,.9);color:#243250;border-radius:999px;padding:2px 10px;font-size:11.5px;font-weight:700}
+.hp:hover{background:#fff}
+.hp.on-off{background:var(--amber);border-color:var(--amber);color:#fff}
+.hp.on-absent{background:var(--danger);border-color:var(--danger);color:#fff}
+.hstat{font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 10px;border-radius:999px;background:rgba(255,255,255,.9);color:#243250}
+.hstat.absent{background:var(--danger);color:#fff}
+.hstat.off{background:var(--amber);color:#fff}
+.times{position:sticky;left:0;z-index:4;background:var(--surface);border-right:3px solid var(--frame)}
+.times div{height:var(--slot);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;white-space:nowrap}
+.col{position:relative;border-left:2px solid var(--frame)}
+.col.off{background:repeating-linear-gradient(135deg,#f3f1e6 0 10px,#ebe8d9 10px 20px)}
+.col.absent{background:repeating-linear-gradient(135deg,#f8ebe8 0 10px,#f0dcd8 10px 20px)}
+.colflag{position:sticky;top:96px;display:block;margin:8px auto 0;width:max-content;font-size:11.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:999px;background:var(--surface);border:1.5px solid var(--amber);color:var(--amber);z-index:1;pointer-events:none}
+.col.absent .colflag{color:var(--danger);border-color:var(--danger)}
+.slot{display:block;width:100%;height:var(--slot);border:0;border-bottom:1px solid var(--line);background:transparent;font-family:var(--f-mono);font-size:10.5px;color:var(--faint);text-align:center;padding:0}
+.slot:disabled{cursor:default}
+.slot:not(:disabled):hover,.slot:not(:disabled):focus-visible{background:var(--green-soft);color:var(--green);font-weight:500}
+.slot:not(:disabled):hover::before{content:"+ "}
+.entry{position:absolute;border:0;border-bottom:1px solid rgba(0,0,0,.18);padding:2px 6px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;text-align:center;z-index:2;min-width:0}
+.entry:hover{filter:brightness(.95);z-index:3}
+.entry .et{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;opacity:.9}
+.entry .en{font-weight:700;font-size:14px;line-height:1.15;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.entry .es{font-size:11.5px;font-weight:600;line-height:1.15;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.9}
+.entry .eno{font-style:italic;font-weight:700;font-size:11px;line-height:1.15;max-width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.entry.narrow .en{font-size:12.5px}
+.entry.narrow .et{font-size:9.5px;letter-spacing:0}
+.entry.uncounted .en{text-decoration:line-through}
+.entry.isnote{outline:2px dashed currentColor;outline-offset:-5px}
+.entry.isnote .et b,.entry.paid .et b{font-weight:700;letter-spacing:.08em}
+.legend i.lgnote{background:transparent;border:2px dashed var(--ink)}
+.btn.paidbtn{background:#7a4bc2;border-color:#7a4bc2;color:#fff}
+.btn.paidbtn:hover{background:#68399f;border-color:#68399f}
+.btn.paidbtn.undo{background:transparent;color:#7a4bc2}
+.btn.paidbtn:disabled{opacity:.4}
+.paygrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.paygrid button{border:2px solid var(--line);background:var(--surface);border-radius:10px;padding:12px 10px;font-weight:700;font-size:14px;text-align:center}
+.paygrid button:hover{border-color:#7a4bc2}
+.paygrid button[aria-pressed="true"]{border-color:#7a4bc2;background:#efe7fa;color:#5a2f96}
+.notes-list td{cursor:pointer;vertical-align:top}
+.notes-list tr:hover td{background:var(--green-soft)}
+.notes-list tr.today td{background:#fbf7dc}
+.notes-list tr.today td:first-child b::after{content:"Today";margin-left:8px;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:99px;background:var(--green);color:#fff;vertical-align:1px}
+.notes-list td.prev{white-space:normal;max-width:620px;color:var(--ink)}
+.notes-list td.prev.empty{color:var(--faint)}
+.notes-list td.prev span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.notesheet{width:min(640px,100%)}
+.notesheet textarea{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fafbf9;width:100%;resize:vertical;font-size:15px;line-height:1.5;min-height:220px}
+.notenav{display:flex;align-items:center;gap:8px}
+.methodtag{display:block;font-size:11.5px;font-weight:700;color:#5a2f96;margin-top:3px}
+.nextvisit{display:block;font-size:12px;color:var(--green);font-weight:600}
+.paidinfo{margin:0;padding:8px 12px;border-radius:9px;background:#efe7fa;color:#5a2f96;font-weight:700;font-size:13px}
+.paidchip{display:inline-block;margin-left:6px;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:#7a4bc2;color:#fff}
+.unpaidchip{display:inline-block;margin-left:6px;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:var(--amber-soft);color:var(--amber)}
+.rep tr.unpaid td.num{color:var(--muted)}
+.entry.pending{box-shadow:inset 0 0 0 2px var(--amber)}
+.entry.failed{box-shadow:inset 0 0 0 3px var(--danger)}
+.nowhost{grid-column:1/-1;grid-row:2;position:relative;pointer-events:none;z-index:6}
+.nowline{position:absolute;left:0;right:0;height:2px;background:var(--now)}
+.nowline::before{content:"";position:absolute;left:3px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--now)}
+.hint{margin:0;color:var(--muted);font-size:13px}
+
+/* tables */
+.tablewrap{overflow-x:auto}
+.wk{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;background:var(--surface)}
+.wk th,.wk td{border:1px solid var(--line);padding:10px 12px;text-align:center;white-space:nowrap}
+.wk thead th{background:var(--head);color:#fff;font-weight:700;border-color:var(--frame)}
+.wk thead th button{all:unset;cursor:pointer;display:block}
+.wk thead th button:hover{text-decoration:underline}
+.wk thead th.today{background:var(--green)}
+.wk tbody th{text-align:left;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.wk td b{font-size:17px}
+.wk td .tg{display:block;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.wk td .tg.off{color:var(--amber)} .wk td .tg.absent{color:var(--danger)}
+.wk td.zero{color:var(--faint)}
+.wk tfoot td,.wk tfoot th{font-weight:800;background:var(--green-soft)}
+.frame{border:3px solid var(--frame);border-radius:8px;overflow:hidden}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.stat small{display:block;font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.stat b{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;min-width:0}
+.panel h3{margin:0;padding:12px 16px;font-family:var(--f-serif);font-size:16px;font-weight:700;border-bottom:1px solid var(--line)}
+table.pt{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+.pt th,.pt td{padding:9px 14px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap;vertical-align:middle}
+.pt thead th{font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:#fff;background:var(--head);font-weight:700}
+.pt td.num,.pt th.num{text-align:right}
+.pt tfoot td{font-weight:800;background:var(--green-soft)}
+.pt td.acts{text-align:right}
+.pt td.acts .btn+.btn{margin-left:6px}
+.pt tr.editing td{background:var(--green-soft)}
+.barcell{width:36%;min-width:140px}
+.bar{height:10px;border-radius:99px;background:var(--bg);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--green)}
+.muted{color:var(--muted)}
+.loading{opacity:.55}
+.emptyrow td{padding:26px 16px;text-align:center;color:var(--muted);white-space:normal}
+
+/* forms on pages */
+.formgrid{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr) auto;gap:10px;align-items:end;padding:14px 16px}
+@media (max-width:700px){.formgrid{grid-template-columns:1fr 1fr}.formgrid .wide{grid-column:1/-1}}
+.fld{display:flex;flex-direction:column;gap:5px;min-width:0}
+.fld>span{font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.fld input,.fld select,.fld textarea{border:1px solid var(--line);border-radius:9px;padding:9px 10px;background:#fafbf9;width:100%}
+.fld textarea{resize:vertical}
+.btnrow{display:flex;gap:8px}
+
+/* color codes page */
+.colors{display:flex;flex-direction:column}
+.crow{display:grid;grid-template-columns:52px minmax(0,1fr) auto auto;gap:10px 14px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line)}
+.crow:last-child{border-bottom:0}
+.crow input[type=color]{width:52px;height:36px;border:1px solid var(--line);border-radius:8px;padding:2px;background:#fff}
+.crow input[type=text]{border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:#fafbf9;width:100%;min-width:0}
+.crow .chk{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;white-space:nowrap}
+.crow .chip{display:inline-block;width:52px;height:30px;border-radius:6px;border:1px solid rgba(0,0,0,.12)}
+.preview{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-width:140px;height:44px;padding:2px 10px;border-radius:2px;font-weight:700;font-size:13px}
+.preview small{font-family:var(--f-mono);font-size:9.5px;font-weight:400;opacity:.9}
+@media (max-width:640px){.crow{grid-template-columns:52px minmax(0,1fr)}.crow .preview,.crow .chk{grid-column:2}}
+.pagefoot{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 16px;border-top:1px solid var(--line);background:#fafbf9}
+
+/* modal */
+.overlay{position:fixed;inset:0;background:rgba(14,24,20,.5);display:grid;place-items:center;padding:16px;z-index:50}
+.sheet{width:min(520px,100%);max-height:calc(100vh - 32px);overflow:auto;background:var(--surface);border-radius:14px;box-shadow:0 20px 50px rgba(0,0,0,.3);padding:18px;display:flex;flex-direction:column;gap:12px}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.sheet-head h3{margin:0;font-family:var(--f-serif);font-size:19px}
+.x{border:0;background:none;font-size:24px;line-height:1;color:var(--muted);width:34px;height:34px;border-radius:8px}
+.x:hover{background:var(--bg)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sheet .seg{display:flex}
+.sheet .seg button{flex:1;white-space:nowrap}
+.sheet .seg button:disabled{opacity:.35}
+.swatches{display:flex;flex-wrap:wrap;gap:6px}
+.sw{border:2px solid transparent;border-radius:8px;padding:6px 10px;font-size:12.5px;font-weight:700}
+.sw[aria-pressed="true"]{border-color:var(--frame);box-shadow:0 0 0 2px #fff inset}
+.sheet-foot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:4px}
+.grow{flex:1}
+.err{margin:0;color:var(--danger);font-weight:700;font-size:13px}
+.ok-msg{margin:0;color:var(--green);font-weight:700;font-size:13px}
+.addons{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.arow{display:flex;align-items:center;gap:10px;padding:8px 10px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.arow:last-child{border-bottom:0}
+.arow .an{flex:1 1 160px;min-width:0;font-weight:600}
+.arow .an small{font-family:var(--f-mono);color:var(--muted);font-weight:400;margin-left:6px;white-space:nowrap}
+.stepper{display:inline-flex;align-items:center;gap:6px}
+.stepper button{width:32px;height:32px;border:1px solid var(--line);background:var(--surface);border-radius:8px;font-weight:800;font-size:16px}
+.stepper button:hover:not(:disabled){border-color:var(--green)}
+.stepper output{min-width:22px;text-align:center;font-weight:700;font-variant-numeric:tabular-nums}
+.stepper .u{color:var(--muted);font-size:12.5px;min-width:44px}
+.arow.has{background:var(--green-soft)}
+.checks{display:flex;flex-wrap:wrap;gap:8px 16px}
+.checks label{display:inline-flex;align-items:center;gap:6px;font-weight:600}
+.checks input{width:18px;height:18px;accent-color:var(--green)}
+.subhead{font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:10px 14px;background:#fafbf9;border-bottom:1px solid var(--line)}
+.money-form{grid-template-columns:minmax(0,2fr) minmax(0,1fr) auto;border-bottom:1px solid var(--line)}
+@media (max-width:700px){.money-form{grid-template-columns:1fr 1fr}}
+.billbox{display:flex;flex-direction:column;gap:2px;padding:9px 12px;border-radius:9px;background:var(--bg);font-variant-numeric:tabular-nums}
+.billbox div{display:flex;justify-content:space-between;gap:8px}
+.billbox .tot{font-weight:800;font-size:15px;border-top:1px solid var(--line);margin-top:4px;padding-top:4px}
+.rep td{vertical-align:top}
+.rep td.svcs{white-space:normal;min-width:200px;max-width:340px}
+.rep td.svcs small{display:block;color:var(--muted)}
+.rep td.svcs .nd{color:var(--green);font-weight:700}
+.rep .chipc{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:0;border:1px solid rgba(0,0,0,.15)}
+.rep tr.unc td{color:var(--muted)}
+.rep tr.unc td b{text-decoration:line-through}
+.estline{display:flex;justify-content:space-between;gap:8px;padding:9px 12px;border-radius:9px;background:var(--bg);font-weight:700;font-variant-numeric:tabular-nums}
+.tagpill{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:var(--green-soft);color:var(--green);margin-left:6px}
+.staffrow{display:flex;gap:8px;align-items:center}
+.staffrow input{flex:1;min-width:0;border:1px solid var(--line);border-radius:9px;padding:8px 10px}
+
+/* drag and drop */
+.can-drag .entry{cursor:grab;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+body.dragging,body.dragging *{cursor:grabbing!important;-webkit-user-select:none!important;user-select:none!important}
+.entry.drag-src{opacity:.3}
+.dragghost{position:fixed;z-index:90;pointer-events:none;opacity:.92;box-shadow:0 12px 28px rgba(0,0,0,.35);transform:rotate(1.5deg);border-radius:2px}
+.dropprev{position:absolute;left:3px;right:3px;border:2px dashed var(--frame);background:rgba(58,122,76,.16);z-index:4;pointer-events:none;display:flex;justify-content:center;align-items:flex-start;padding-top:2px;font-weight:800;font-size:12px;color:var(--frame);font-variant-numeric:tabular-nums}
+.dropprev.bad{border-color:var(--danger);background:rgba(179,49,31,.12);color:var(--danger)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:95;background:#1b2420;color:#fff;border-radius:12px;padding:10px 12px 10px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 12px 30px rgba(0,0,0,.3);max-width:calc(100% - 32px);font-weight:600}
+.toast button{border:0;background:#f5d327;color:#1b1b12;border-radius:8px;padding:6px 12px;font-weight:800}
+.trow{display:flex;align-items:center;gap:12px;justify-content:space-between;padding:10px 12px;border:1px solid var(--line);border-radius:10px}
+.trow small{display:block;color:var(--muted);font-size:12.5px}
+.meta{margin:0;font-size:12.5px;color:var(--muted)}
+/* sign-in gates */
+.gate{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:16px;overflow:auto;background:var(--side)}
+.gatecard{width:min(420px,100%);background:var(--surface);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.gatecard h2{margin:0;font-family:var(--f-serif);font-size:22px;text-wrap:balance}
+.gatecard p{margin:0}
+.gbrand{display:flex;align-items:center;gap:10px;color:var(--ink)}
+.gbrand .logo{background:var(--side)}
+.gbrand b{font-family:var(--f-serif);font-weight:400;font-size:17px}
+.btn.big{min-height:44px;font-size:15px}
+.btn.dark{background:#1b1b12;border-color:#1b1b12;color:#f5d327}
+.gate.yellow{background:#f5d327}
+.pincard{border:3px solid #1b1b12;box-shadow:8px 8px 0 #1b1b12}
+.pincard h2{font-family:var(--f-body);font-weight:800;font-size:22px;line-height:1.25}
+.pincard input{font-size:22px;letter-spacing:.4em;text-align:center}
+.rec{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;font-family:var(--f-mono);font-weight:500;font-size:13px;color:#c0201a;border:1.5px solid #c0201a;border-radius:6px;padding:2px 8px}
+.rec i{width:9px;height:9px;border-radius:50%;background:#c0201a;animation:pulse 1.2s infinite}
+@media (prefers-reduced-motion:reduce){.rec i{animation:none}}
+.signout{align-self:flex-start;border:1px solid var(--side-line);background:transparent;color:var(--side-ink);border-radius:8px;padding:5px 12px;font-weight:600;font-size:13px}
+.signout:hover{background:rgba(255,255,255,.08)}
+.usr-grid{grid-template-columns:minmax(0,1.2fr) minmax(0,1.6fr) minmax(0,1fr) minmax(0,1fr) auto}
+@media (max-width:900px){.usr-grid{grid-template-columns:1fr 1fr}}
+.rolepill{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:2px 9px;border-radius:99px;background:var(--bg)}
+.rolepill.admin{background:#f5d327;color:#1b1b12}
+.rolepill.receptionist{background:var(--green-soft);color:var(--green)}
+
+@media (max-width:900px){
+  .shell{grid-template-columns:1fr}
+  .side{position:static;height:auto;flex-direction:row;align-items:center;flex-wrap:wrap;padding:12px 16px;gap:10px}
+  .brand{border:0;padding:0}
+  .nav{flex-direction:row;flex-wrap:wrap}
+  .nav button{padding:8px 12px;font-size:14px}
+  .sidefoot{margin:0 0 0 auto;border:0;padding:0}
+  .sidefoot small{display:none}
+  .main{padding-inline:16px}
+  .verse{order:3;max-width:none}
+  .gridwrap{max-height:calc(100vh - 150px)}
+}
+@media (max-width:440px){.row2{grid-template-columns:1fr}.grid{grid-template-columns:84px repeat(var(--cols,6),minmax(140px,1fr));min-width:calc(84px + var(--cols,6)*140px)}.times div{font-size:12px}}
+</style>
+</head>
+<body>
+
+<div class="shell" id="shell" hidden>
+  <aside class="side">
+    <div class="brand">
+      <span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#f1f6ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v6a4 4 0 0 0 8 0V3"/><path d="M9 13v3a5 5 0 0 0 10 0v-2"/><circle cx="19" cy="12" r="2"/></svg></span>
+      <b>Stretch Lab PH<small class="branchname">NEW Capital Town 2</small></b>
+    </div>
+    <nav class="nav" aria-label="Sections">
+      <button data-tab="cal" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 14h2M14 14h2M8 18h2"/></svg>Schedule</button>
+      <button data-tab="svc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 3v2h6V3M9 10h6M9 14h6M9 18h3"/></svg>Services</button>
+      <button data-tab="report" id="nav-report" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg>Daily report</button>
+      <button data-tab="perf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>Performance</button>
+      <button data-tab="colors"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 1.8-.9 1.8-1.8 0-1.4-1.1-1.7-1.1-2.9 0-1 .8-1.6 1.8-1.6H17a4 4 0 0 0 4-4c0-4.2-4-7.7-9-7.7z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10.5" cy="7" r="1.2"/><circle cx="15" cy="7.5" r="1.2"/></svg>Color codes</button>
+      <button data-tab="users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M17 11l2 2 3.5-4"/></svg>Accounts</button>
+    </nav>
+    <div class="sidefoot">
+      <span class="who"><span class="dot"></span><span id="role">Connecting…</span></span>
+      <small id="role-sub">Checking your access</small>
+      <button type="button" class="signout" id="signout">Sign out</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <!-- SCHEDULE -->
+    <section id="view-cal" class="view">
+      <div class="top">
+        <div class="title"><h1>Schedule</h1><h2 id="date-label"></h2></div>
+        <div class="verse"><q>I can do all things through Christ who strengthens me.</q><small>Philippians 4:13</small></div>
+        <div class="ctrls">
+          <div class="seg" id="view-mode">
+            <button type="button" data-view="day" aria-pressed="true">Daily</button>
+            <button type="button" data-view="week" aria-pressed="false">Weekly</button>
+          </div>
+          <button class="ibtn" id="prev" aria-label="Previous">‹</button>
+          <input type="date" id="date-pick" aria-label="Pick a date">
+          <button class="ibtn" id="next" aria-label="Next">›</button>
+        </div>
+      </div>
+      <div class="bar2">
+        <span class="cap" title="Clients booked against the 60-a-day capacity"><b id="day-count">0</b><small id="cap-label">/ 60 clients today</small></span>
+        <button class="pill" id="save-status" type="button"><span class="dot"></span><span>Loading</span></button>
+        <button class="btn" id="today">Today</button>
+        <button class="btn" id="edit-staff" hidden>Edit staff</button>
+        <button class="btn" id="trash-btn" hidden>Recently deleted</button>
+        <div class="legend" id="legend"></div>
+      </div>
+      <div class="notice" id="notice" hidden></div>
+      <div class="gridwrap" id="gridwrap"><div class="grid" id="grid"></div></div>
+      <div id="week-wrap" hidden>
+        <div class="frame"><div class="tablewrap"><table class="wk" id="week-table"></table></div></div>
+      </div>
+      <p class="hint" id="hint"></p>
+    </section>
+
+    <!-- SERVICES -->
+    <section id="view-svc" class="view" hidden>
+      <div class="top"><div class="title"><h1>Services</h1><p id="svc-sub">The services listed here appear in the booking form when you add a client to the calendar.</p></div></div>
+      <form class="panel" id="svc-form" novalidate>
+        <h3 id="svc-form-title">Add a service</h3>
+        <div class="formgrid">
+          <label class="fld wide"><span>Service name</span><input id="svc-name" maxlength="60" autocomplete="off" placeholder="e.g. Assisted stretch"></label>
+          <label class="fld"><span>Type</span><select id="svc-type"><option value="main">Main service</option><option value="addon">Additional service</option></select></label>
+          <label class="fld"><span>Price (₱, optional)</span><input id="svc-price" type="number" min="0" step="1" inputmode="numeric"></label>
+          <span></span>
+          <label class="fld main-f"><span>Length</span><select id="svc-dur"><option value="30">30 min</option><option value="60" selected>1 hr</option><option value="90">1.5 hr</option></select></label>
+          <label class="fld addon-f" hidden><span>Counted per</span><input id="svc-unit" maxlength="16" placeholder="area" autocomplete="off"></label>
+          <label class="fld addon-f" hidden><span>Needling areas each</span><select id="svc-areas"><option value="0">Not needling</option><option value="1">1 area</option><option value="2">2 areas</option><option value="3">3 areas</option><option value="4">4 areas</option></select></label>
+          <div class="btnrow"><button type="button" class="btn ghost" id="svc-cancel" hidden>Cancel</button><button type="submit" class="btn primary" id="svc-save">Add service</button></div>
+        </div>
+        <p class="err" id="svc-err" hidden style="padding:0 16px 12px"></p>
+      </form>
+      <div class="panel"><h3>Main services</h3><div class="tablewrap"><table class="pt" id="svc-table"></table></div></div>
+      <div class="panel"><h3>Additional services</h3><div class="tablewrap"><table class="pt" id="svc-addon-table"></table></div></div>
+    </section>
+
+    <!-- DAILY NOTES -->
+    <section id="view-notes" class="view" hidden>
+      <div class="top">
+        <div class="title"><h1>Daily notes</h1><h2 id="notes-label"></h2></div>
+        <div class="ctrls" style="margin-left:auto">
+          <button class="ibtn" id="nprev" aria-label="Previous month">‹</button>
+          <button class="btn" id="ntoday">Today's note</button>
+          <button class="ibtn" id="nnext" aria-label="Next month">›</button>
+        </div>
+      </div>
+      <div class="panel"><div class="tablewrap"><table class="pt notes-list" id="notes-table"></table></div></div>
+      <p class="hint">Click any day to read or write its note. Notes save to everyone's screens.</p>
+    </section>
+
+    <!-- DAILY REPORT -->
+    <section id="view-report" class="view" hidden>
+      <div class="top">
+        <div class="title"><h1>Daily report</h1><h2 id="rep-label"></h2></div>
+        <div class="ctrls" style="margin-left:auto">
+          <button class="ibtn" id="rprev" aria-label="Previous day">‹</button>
+          <input type="date" id="rep-pick" aria-label="Report date">
+          <button class="ibtn" id="rnext" aria-label="Next day">›</button>
+          <button class="btn" id="rtoday">Today</button>
+        </div>
+      </div>
+      <div class="stats" id="rep-stats"></div>
+      <div><div class="seg" id="rep-tabs">
+        <button type="button" data-rt="clients" aria-pressed="true">Clients</button>
+        <button type="button" data-rt="expenses" aria-pressed="false">Expenses</button>
+        <button type="button" data-rt="savings" aria-pressed="false">Savings</button>
+      </div></div>
+      <div class="panel" id="rt-clients"><h3>Clients</h3><div class="tablewrap"><table class="pt rep" id="rep-table"></table></div></div>
+      <div class="panel" id="rt-expenses" hidden><h3>Expenses</h3>
+        <form class="formgrid money-form" id="exp-form" novalidate>
+          <label class="fld wide"><span>What was it for</span><input id="exp-desc" maxlength="80" autocomplete="off" placeholder="e.g. Massage oil, Grab delivery"></label>
+          <label class="fld"><span>Amount (₱)</span><input id="exp-amt" type="number" min="0" step="0.01" inputmode="decimal"></label>
+          <div class="btnrow"><button type="submit" class="btn primary">Add expense</button></div>
+        </form>
+        <p class="err" id="exp-err" hidden style="padding:0 16px 10px"></p>
+        <div class="tablewrap"><table class="pt" id="exp-table"></table></div>
+      </div>
+      <div class="panel" id="rt-savings" hidden><h3>Savings</h3>
+        <form class="formgrid money-form" id="sav-form" novalidate>
+          <label class="fld wide"><span>What it's set aside for</span><input id="sav-desc" maxlength="80" autocomplete="off" placeholder="e.g. Rent fund"></label>
+          <label class="fld"><span>Amount (₱)</span><input id="sav-amt" type="number" min="0" step="0.01" inputmode="decimal"></label>
+          <div class="btnrow"><button type="submit" class="btn primary">Add to savings</button></div>
+        </form>
+        <p class="err" id="sav-err" hidden style="padding:0 16px 10px"></p>
+        <div class="tablewrap"><table class="pt" id="sav-table"></table></div>
+      </div>
+      <div class="panel"><h3>Notes for the day</h3>
+        <div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px">
+          <textarea id="day-note" rows="4" maxlength="3000" placeholder="Anything to remember about today: cash count, issues, reminders for tomorrow…" style="border:1px solid var(--line);border-radius:9px;padding:10px;background:#fafbf9;width:100%;resize:vertical"></textarea>
+          <div style="display:flex;align-items:center;gap:10px"><button type="button" class="btn primary" id="day-note-save">Save note</button><span class="muted" id="day-note-msg"></span></div>
+        </div>
+      </div>
+      <p class="hint" id="rep-hint"></p>
+    </section>
+
+    <!-- PERFORMANCE -->
+    <section id="view-perf" class="view" hidden>
+      <div class="top">
+        <div class="title"><h1>Performance</h1><h2 id="perf-label"></h2></div>
+        <div class="ctrls" style="margin-left:auto">
+          <div class="seg" id="perf-mode">
+            <button type="button" data-mode="day" aria-pressed="true">Day</button>
+            <button type="button" data-mode="week" aria-pressed="false">Week</button>
+            <button type="button" data-mode="month" aria-pressed="false">Month</button>
+            <button type="button" data-mode="cutoff" aria-pressed="false">Cutoff</button>
+          </div>
+          <button class="ibtn" id="pprev" aria-label="Previous period">‹</button>
+          <button class="btn" id="pnow">Current</button>
+          <button class="ibtn" id="pnext" aria-label="Next period">›</button>
+          <button class="btn" id="prefresh">Refresh</button>
+        </div>
+      </div>
+      <div class="stats" id="perf-stats"></div>
+      <div class="panel"><h3>Clients seen per therapist</h3><div class="tablewrap"><table class="pt" id="perf-table"></table></div></div>
+      <div class="panel" id="perf-earn-panel"><h3>Earnings per therapist</h3><div class="tablewrap"><table class="pt" id="perf-earn"></table></div><p class="hint" id="perf-earn-unpaid" style="padding:10px 16px 0;color:var(--amber);font-weight:700" hidden></p><p class="hint" style="padding:10px 16px">Only sessions marked Paid count here. Main services and non-needling add-ons go to the main therapist. Needling goes to the needling therapist, split evenly if more than one is ticked. Discounts are taken off each part of the bill in proportion. Tips go to the main therapist.</p></div>
+      <div class="panel"><h3>Dry needling by staff</h3><div class="tablewrap"><table class="pt" id="perf-needle"></table></div></div>
+      <div class="panel"><h3>Services booked</h3><div class="tablewrap"><table class="pt" id="perf-svc"></table></div></div>
+      <div class="panel" id="perf-days-panel"><h3>By day</h3><div class="tablewrap"><table class="pt" id="perf-days"></table></div></div>
+    </section>
+
+    <!-- ACCOUNTS -->
+    <section id="view-users" class="view" hidden>
+      <div class="top"><div class="title"><h1>Accounts</h1><p>Each person signs in with their name and password. Admins also enter a security PIN.</p></div></div>
+      <div class="notice" id="users-notice" hidden></div>
+      <form class="panel" id="usr-form" novalidate>
+        <h3 id="usr-form-title">Add an account</h3>
+        <div class="formgrid usr-grid">
+          <label class="fld"><span>Name</span><input id="usr-name" maxlength="40" autocomplete="off"></label>
+          <label class="fld"><span>Access level</span><select id="usr-role"><option value="staff">Staff · schedule only</option><option value="receptionist">Receptionist · schedule, services, daily report</option><option value="admin">Admin · everything</option></select></label>
+          <label class="fld"><span id="usr-pass-label">Password</span><input id="usr-pass" type="password" autocomplete="new-password"></label>
+          <label class="fld" id="usr-pin-wrap" hidden><span id="usr-pin-label">Security PIN (4–8 digits)</span><input id="usr-pin" type="password" inputmode="numeric" autocomplete="off" maxlength="8"></label>
+          <div class="btnrow"><button type="button" class="btn ghost" id="usr-cancel" hidden>Cancel</button><button type="submit" class="btn primary" id="usr-save">Add account</button></div>
+        </div>
+        <p class="err" id="usr-err" hidden style="padding:0 16px 12px"></p>
+      </form>
+      <div class="panel"><h3>Accounts</h3><div class="tablewrap"><table class="pt" id="usr-table"></table></div></div>
+    </section>
+
+    <!-- COLOR CODES -->
+    <section id="view-colors" class="view" hidden>
+      <div class="top"><div class="title"><h1>Color codes</h1><p id="colors-sub">Rename any color or change its shade. You can add up to 5 extra colors. Untick "Count as client" for colors like Cancelled so those bookings don't count in Performance.</p></div></div>
+      <div class="panel">
+        <div class="colors" id="color-rows"></div>
+        <div class="pagefoot" id="color-foot">
+          <button type="button" class="btn" id="color-add">Add a color</button>
+          <span class="muted" id="color-left"></span>
+          <span class="grow"></span>
+          <span id="color-msg"></span>
+          <button type="button" class="btn primary" id="color-save">Save color codes</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast" hidden role="status"><span id="toast-msg"></span><button type="button" id="toast-undo">Undo</button></div>
+
+<!-- SIGN IN -->
+<div class="gate" id="gate">
+  <form class="gatecard" id="login-form" novalidate>
+    <div class="gbrand"><span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#f1f6ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v6a4 4 0 0 0 8 0V3"/><path d="M9 13v3a5 5 0 0 0 10 0v-2"/><circle cx="19" cy="12" r="2"/></svg></span><b>Stretch Lab PH<small class="branchname">NEW Capital Town 2</small></b></div>
+    <h2 id="gate-title">Sign in</h2>
+    <p class="muted" id="gate-msg">Connecting…</p>
+    <div id="login-fields" hidden style="display:flex;flex-direction:column;gap:10px">
+      <label class="fld"><span>Name</span><input id="login-name" autocomplete="username" maxlength="40"></label>
+      <label class="fld"><span>Password</span><input id="login-pass" type="password" autocomplete="current-password"></label>
+      <p class="err" id="login-err" hidden></p>
+      <button type="submit" class="btn primary big">Sign in</button>
+    </div>
+  </form>
+</div>
+
+<!-- ADMIN PIN CHECK -->
+<div class="gate yellow" id="pin-gate" hidden>
+  <form class="gatecard pincard" id="pin-form" novalidate>
+    <span class="rec"><i></i>REC</span>
+    <h2>This session is being screen recorded. Are you an admin?</h2>
+    <p id="pin-who"></p>
+    <label class="fld"><span>Security PIN</span><input id="pin-input" type="password" inputmode="numeric" maxlength="8" autocomplete="off"></label>
+    <p class="err" id="pin-err" hidden></p>
+    <div class="btnrow" style="justify-content:space-between"><button type="button" class="btn ghost" id="pin-no">No, sign out</button><button type="submit" class="btn dark">Yes, I'm an admin</button></div>
+  </form>
+</div>
+
+<div class="overlay" id="modal" hidden>
+  <form class="sheet" id="entry-form" novalidate>
+    <div class="sheet-head"><h3 id="m-title">New session</h3><button type="button" class="x" id="m-close" aria-label="Close">×</button></div>
+    <div class="seg" id="m-kind">
+      <button type="button" data-kind="client" aria-pressed="true">Client</button>
+      <button type="button" data-kind="note" aria-pressed="false">Note</button>
+    </div>
+    <label class="fld"><span id="m-name-label">Client name</span><input id="m-name" maxlength="80" autocomplete="off"></label>
+    <label class="fld client-only"><span>Phone or FB name</span><input id="m-contact" maxlength="80" autocomplete="off"></label>
+    <label class="fld client-only"><span>Main service</span><select id="m-service"></select></label>
+    <div class="fld client-only" id="m-addons-wrap"><span>Additional services</span><div class="addons" id="m-addons"></div></div>
+    <div class="fld client-only" id="m-needle-wrap" hidden><span>Needling therapist</span><p class="muted" style="margin:0;font-size:12.5px">Tick who did the needling. This can be different from the main therapist above, and they get the needling credit in Performance.</p><div class="checks" id="m-needle-by"></div></div>
+    <div class="fld client-only" id="m-bill-wrap"><span>Billing</span>
+      <div class="row2">
+        <div class="fld"><span>Discount</span><div style="display:flex;gap:6px"><input id="m-disc" type="number" min="0" step="1" inputmode="decimal" placeholder="0" style="flex:1;min-width:0"><select id="m-disc-type" style="width:72px" aria-label="Discount type"><option value="amt">₱</option><option value="pct">%</option></select></div></div>
+        <label class="fld"><span>Tip (₱)</span><input id="m-tip" type="number" min="0" step="1" inputmode="decimal" placeholder="0"></label>
+      </div>
+      <div class="billbox" id="m-bill"></div>
+    </div>
+    <div class="row2">
+      <label class="fld"><span>Therapist</span><select id="m-staff"></select></label>
+      <label class="fld"><span>Start time</span><select id="m-start"></select></label>
+    </div>
+    <div class="fld"><span>Session length</span>
+      <div class="seg" id="m-dur">
+        <button type="button" data-dur="30" aria-pressed="false">30 min</button>
+        <button type="button" data-dur="60" aria-pressed="true">1 hr</button>
+        <button type="button" data-dur="90" aria-pressed="false">1.5 hr</button>
+      </div>
+    </div>
+    <div class="fld"><span>Color code</span><div class="swatches" id="m-color"></div></div>
+    <label class="fld"><span>Notes</span><textarea id="m-notes" rows="3" maxlength="500" placeholder="Shown on the calendar under the name"></textarea></label>
+    <p class="paidinfo" id="m-paidinfo" hidden></p>
+    <p class="err" id="m-err" hidden></p>
+    <p class="meta" id="m-meta" hidden></p>
+    <div class="sheet-foot">
+      <button type="button" class="btn danger ghost" id="m-delete">Delete</button>
+      <button type="button" class="btn paidbtn" id="m-paid" hidden>Mark as paid</button>
+      <span class="grow"></span>
+      <button type="button" class="btn ghost" id="m-cancel">Cancel</button>
+      <button type="submit" class="btn primary" id="m-save">Save</button>
+    </div>
+  </form>
+</div>
+
+<div class="overlay" id="pay-modal" hidden style="z-index:60">
+  <form class="sheet" id="pay-form" novalidate>
+    <div class="sheet-head"><h3>Mark as paid</h3><button type="button" class="x" id="pay-close" aria-label="Close">×</button></div>
+    <p class="paidinfo" id="pay-sum"></p>
+    <div class="fld"><span>Payment method <b style="color:var(--danger)">*</b></span><div class="paygrid" id="pay-methods"></div></div>
+    <div class="fld"><span>Next visit <b style="color:var(--danger)">*</b></span>
+      <p class="muted" style="margin:0;font-size:12.5px">Enter a date, a note, or both.</p>
+      <div class="row2">
+        <label class="fld"><span>Date</span><input type="date" id="pay-next-date"></label>
+        <label class="fld"><span>Note</span><input id="pay-next-note" maxlength="120" autocomplete="off" placeholder="e.g. Will text to book"></label>
+      </div>
+    </div>
+    <p class="err" id="pay-err" hidden></p>
+    <div class="sheet-foot"><span class="grow"></span><button type="button" class="btn ghost" id="pay-cancel">Cancel</button><button type="submit" class="btn paidbtn" id="pay-submit" disabled>Submit</button></div>
+  </form>
+</div>
+
+<div class="overlay" id="trash-modal" hidden>
+  <div class="sheet" role="dialog" aria-labelledby="trash-title">
+    <div class="sheet-head"><h3 id="trash-title">Recently deleted</h3><button type="button" class="x" id="trash-close" aria-label="Close">×</button></div>
+    <p class="muted" style="margin:0">Deleted sessions stay here and can be put back on the calendar.</p>
+    <div id="trash-list" style="display:flex;flex-direction:column;gap:8px"></div>
+  </div>
+</div>
+
+<div class="overlay" id="note-modal" hidden>
+  <form class="sheet notesheet" id="note-form" novalidate>
+    <div class="sheet-head"><h3 id="note-title">Note</h3><button type="button" class="x" id="note-close" aria-label="Close">×</button></div>
+    <div class="notenav"><button type="button" class="btn sm" id="note-prev">‹ Previous day</button><span class="grow"></span><button type="button" class="btn sm" id="note-next">Next day ›</button></div>
+    <textarea id="note-text" rows="12" maxlength="5000" placeholder="Write anything about this day: cash count, reminders, issues, things for tomorrow…"></textarea>
+    <p class="meta" id="note-meta"></p>
+    <p class="err" id="note-err" hidden></p>
+    <div class="sheet-foot"><span class="muted" id="note-count"></span><span class="grow"></span><button type="button" class="btn ghost" id="note-cancel">Close</button><button type="submit" class="btn primary" id="note-save">Save note</button></div>
+  </form>
+</div>
+
+<div class="overlay" id="staff-modal" hidden>
+  <form class="sheet" id="staff-form" novalidate>
+    <div class="sheet-head"><h3>Edit staff columns</h3><button type="button" class="x" id="s-close" aria-label="Close">×</button></div>
+    <p class="muted" style="margin:0">Renaming keeps each person's history. Removing hides the column; past sessions still count in Performance.</p>
+    <div id="staff-rows" style="display:flex;flex-direction:column;gap:8px"></div>
+    <button type="button" class="btn" id="s-add">Add staff</button>
+    <p class="err" id="s-err" hidden></p>
+    <div class="sheet-foot"><span class="grow"></span><button type="button" class="btn ghost" id="s-cancel">Cancel</button><button type="submit" class="btn primary">Save staff</button></div>
+  </form>
+</div>
+
+<script>
+/* Small built-in Supabase connection: calls the database functions directly.
+   Works with the new publishable keys (sb_publishable_...) and the older anon keys. */
+window.supabase={createClient(url,key){
+  const base=url.replace(/\/+$/,"");
+  const headers={"Content-Type":"application/json","apikey":key};
+  if(/^eyJ/.test(key))headers.Authorization="Bearer "+key;
+  return {
+    rpc(fn,args){
+      const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),20000);
+      return fetch(base+"/rest/v1/rpc/"+fn,{method:"POST",headers,body:JSON.stringify(args||{}),signal:ctl.signal,cache:"no-store"})
+        .then(async r=>{clearTimeout(t);const txt=await r.text();let j=null;try{j=txt?JSON.parse(txt):null}catch(e){}
+          return r.ok?{data:j,error:null}:{data:null,error:j||{message:txt||("HTTP "+r.status)}}},
+          e=>{clearTimeout(t);return {data:null,error:{message:"Failed to fetch: "+(e&&e.message||e)}}});
+    },
+    channel(){const c={on(){return c},subscribe(){return c},send(){}};return c}
+  };
+}};
+</script>
+<script>
+/* =====================================================================
+   SETUP: paste your Supabase Project URL and anon public key here.
+   Supabase → Project Settings → API Keys. Use the Publishable key
+   (starts with sb_publishable_) or, on older projects, the anon public key.
+   ===================================================================== */
+const SUPABASE_URL = "https://tdiabiguljkwglntmwtf.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_1OcChu62WOyTYghJh3JKhw_1w1bz_yl";
+</script>
+<script>
+(() => {
+"use strict";
+const DAY_START=7*60, DAY_END=20*60, STEP=30, SLOTS=(DAY_END-DAY_START)/STEP, CAPACITY=60, MAX_CUSTOM_COLORS=5;
+const PAID_BG="#7a4bc2";
+const PAY_METHODS=[{id:"cash",label:"Cash"},{id:"gcash_sienna",label:"GCash Sienna"},{id:"gcash_paul",label:"GCash Paul"},{id:"card_qr",label:"Card / QR (POS)"}];
+function payLabel(id){const m=PAY_METHODS.find(x=>x.id===id);return m?m.label:(id?id:"Method not recorded")}
+function nextVisitText(nv){if(!nv)return "";const d=nv.date?pdate(nv.date).toLocaleDateString("en-PH",{weekday:"short",month:"short",day:"numeric",year:"numeric"}):"";return [d,nv.note||""].filter(Boolean).join(" · ")}
+const DEFAULT_STAFF=["Aki","Lianne","Steve","Gail","Paul","Martha"].map(n=>({id:n.toLowerCase(),name:n}));
+const BUILTIN_COLORS=[
+  {id:"reserved",label:"Reserved",bg:"#b4d3ec",counts:true},
+  {id:"messaged",label:"Messaged",bg:"#a6e3bb",counts:true},
+  {id:"confirmed",label:"Confirmed",bg:"#356a48",counts:true},
+  {id:"rescheduled",label:"Rescheduled",bg:"#f4c7d6",counts:true},
+  {id:"cancelled",label:"Cancelled",bg:"#4d4f4d",counts:false},
+  {id:"break",label:"Break",bg:"#a2a5a0",counts:false},
+  {id:"orange",label:"Orange",bg:"#ec9a2f",counts:true},
+  {id:"full",label:"Full",bg:"#d8302a",counts:true},
+  {id:"noslots",label:"No slots",bg:"#7b1515",counts:true},
+  {id:"mustard",label:"Mustard",bg:"#d1a326",counts:true}
+];
+const TAB_ID="t"+Math.random().toString(36).slice(2,10);
+const LS_KEY="stretchlab-unsaved-v1";
+const $=id=>document.getElementById(id);
+
+const state={token:null,offline:false,lastSync:0,canWrite:false,canConfig:false,role:null,userId:null,userName:"",users:{},usersLoaded:false,restored:false,connecting:true,staff:null,colorItems:{},services:{},date:todayStr(),day:null,dayLoaded:false,
+  pending:[],failed:[],unsubDay:null,unsubWeek:null,week:{},weekKey:"",view:"day",tab:"cal",
+  perfMode:"day",perfAnchor:todayStr(),lastError:"",noticeMsg:"",noticeBad:false};
+const knownDocs=new Set(), chains={};
+
+/* helpers */
+function pad(n){return String(n).padStart(2,"0")}
+function dstr(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+function todayStr(){return dstr(new Date())}
+function pdate(s){const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)}
+function addDays(s,n){const d=pdate(s);d.setDate(d.getDate()+n);return dstr(d)}
+function weekStart(s){const d=pdate(s);return addDays(s,-((d.getDay()+6)%7))}
+function fmtTime(min){let h=Math.floor(min/60),m=min%60;const ap=h>=12?"PM":"AM";h=h%12||12;return h+":"+pad(m)+" "+ap}
+function fmtDur(m){return m===30?"30 min":m===60?"1 hr":m===90?"1.5 hr":m+" min"}
+function longDate(s){return pdate(s).toLocaleDateString("en-PH",{weekday:"long",month:"long",day:"numeric"})}
+function longDateY(s){return pdate(s).toLocaleDateString("en-PH",{weekday:"long",month:"long",day:"numeric",year:"numeric"})}
+function shortDate(s){return pdate(s).toLocaleDateString("en-PH",{month:"short",day:"numeric"})}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function uid(p){return (p||"e")+Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function peso(n){return "₱"+Number(n).toLocaleString("en-PH")}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function staffList(){return state.staff||DEFAULT_STAFF}
+function staffName(id){const s=staffList().find(x=>x.id===id);return s?s.name:"Former staff"}
+function validHex(h){return /^#[0-9a-f]{6}$/i.test(h||"")}
+function ink(bg){const h=validHex(bg)?bg:"#cccccc";const r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);
+  return (0.299*r+0.587*g+0.114*b)/255>0.6?"#1b2420":"#ffffff"}
+
+/* color codes */
+function colorList(){
+  const items=state.colorItems||{};
+  const list=BUILTIN_COLORS.map((c,i)=>{const o=items[c.id]||{};return {id:c.id,builtin:true,order:i,
+    label:(o.label||"").trim()||c.label,bg:validHex(o.bg)?o.bg:c.bg,counts:typeof o.counts==="boolean"?o.counts:c.counts}});
+  const custom=Object.entries(items).filter(([id,v])=>v&&!BUILTIN_COLORS.some(b=>b.id===id))
+    .map(([id,v])=>({id,builtin:false,order:typeof v.order==="number"?v.order:999,label:(v.label||"").trim()||"Custom",bg:validHex(v.bg)?v.bg:"#888888",counts:v.counts!==false}))
+    .sort((a,b)=>a.order-b.order);
+  return list.concat(custom);
+}
+function legacyColorId(e){
+  if(e.color&&!["red","gray"].includes(e.color))return e.color;
+  if(e.kind==="note")return e.color==="red"?"full":e.color==="gray"?"break":"orange";
+  const s=e.status;return !s||s==="booked"?"reserved":s==="done"?"confirmed":s==="noshow"?"cancelled":s;
+}
+function colorOf(e){const id=legacyColorId(e),list=colorList();return list.find(c=>c.id===id)||list[e.kind==="note"?6:0]}
+function counts(e){return !!e&&e.kind==="client"&&colorOf(e).counts}
+
+/* services: type "main" (one per booking) or "addon" (quantity, may count needling areas) */
+function serviceList(type){return Object.entries(state.services||{}).filter(([,v])=>v&&v.name).map(([id,v])=>({id,...v,type:v.type==="addon"?"addon":"main"}))
+  .filter(s=>!type||s.type===type).sort((a,b)=>type==="addon"?(a.order??0)-(b.order??0)||a.name.localeCompare(b.name):a.name.localeCompare(b.name))}
+function serviceLabel(e){if(!e||!e.serviceId)return "";const s=(state.services||{})[e.serviceId];return (s&&s.name)||e.serviceName||""}
+function addonName(a){const s=(state.services||{})[a.id];return (s&&s.name)||a.name||"Add-on"}
+function addonSummary(e){return (e.addons||[]).filter(a=>a&&a.qty>0).map(a=>addonName(a)+(a.qty>1?" ×"+a.qty:"")).join(", ")}
+function entryNeedles(e){return (e.addons||[]).some(a=>a&&a.qty>0&&a.areas>0)}
+/* billing: prices saved on the booking win; otherwise today's service price */
+function mainPrice(e){if(!e||!e.serviceId)return 0;if(typeof e.servicePrice==="number")return e.servicePrice;const s=(state.services||{})[e.serviceId];return s&&typeof s.price==="number"?s.price:0}
+function calcBill(main,addons,disc,tip){
+  const lines=[];let sub=main;
+  for(const a of addons){if(!(a.qty>0))continue;const p=typeof a.price==="number"?a.price:0;sub+=p*a.qty}
+  const d=disc&&disc.amt>0?(disc.type==="pct"?Math.round(sub*Math.min(100,disc.amt))/100:Math.min(sub,disc.amt)):0;
+  return {sub,disc:d,total:Math.max(0,sub-d),tip:tip>0?tip:0};
+}
+function billOf(e){return calcBill(mainPrice(e),(e.addons||[]).map(a=>({qty:a.qty,price:typeof a.price==="number"?a.price:((state.services[a.id]||{}).price)})),e.discount,Number(e.tip)||0)}
+function money(n){return "₱"+Number(n).toLocaleString("en-PH",{minimumFractionDigits:2,maximumFractionDigits:2})}
+
+/* unsaved-change safety net (this device only) */
+function persistUnsaved(){try{const all=[...state.pending,...state.failed].map(o=>({key:o.key,date:o.date,patch:o.patch}));
+  if(all.length)localStorage.setItem(LS_KEY,JSON.stringify(all));else localStorage.removeItem(LS_KEY)}catch(e){}}
+function restoreUnsaved(){let list=[];try{list=JSON.parse(localStorage.getItem(LS_KEY)||"[]")}catch(e){}
+  if(!Array.isArray(list))return;
+  for(const o of list){if(o&&o.date&&o.patch){const op={key:o.key||uid(),date:o.date,patch:o.patch,tries:0};state.pending.push(op);run(op)}}
+  if(list.length)render()}
+
+/* ---------- Supabase connection ---------- */
+const sb=(window.supabase&&SUPABASE_URL.startsWith("https://")&&!SUPABASE_ANON_KEY.startsWith("PASTE"))?window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false}}):null;
+function errCode(error){
+  const m=String((error&&(error.message||error.details))||error||"");
+  for(const k of ["SIGNED_OUT","PIN_REQUIRED","NOT_ALLOWED","NAME_TAKEN","NAME_REQUIRED","PASSWORD_SHORT","PIN_FORMAT","SELF_DEMOTE","LAST_ADMIN","SELF_DELETE","BAD_INPUT","RANGE_TOO_BIG","NOT_FOUND"])if(m.includes(k))return k;
+  if(/fetch|network|Load failed|timeout|NetworkError|ECONN|503|502|504/i.test(m)||(error&&error.code==="")||!navigator.onLine)return "unavailable";
+  return "error";
+}
+async function rpc(fn,args){
+  if(!sb)throw {code:"unavailable",message:"Not connected"};
+  let res;try{res=await sb.rpc(fn,args)}catch(e){throw {code:"unavailable",message:String(e&&e.message||e)}}
+  if(res.error){const code=errCode(res.error);if(code==="SIGNED_OUT")onSignedOutRemotely();if(code==="PIN_REQUIRED")onPinRequired();throw {code,message:res.error.message}}
+  return res.data;
+}
+async function rpcAuthed(fn,args){return rpc(fn,Object.assign({p_token:state.token},args))}
+const FRIENDLY={NAME_TAKEN:"Someone already has that name. Add a last initial to tell them apart.",NAME_REQUIRED:"Enter the person's name.",PASSWORD_SHORT:"Use a password of at least 4 characters.",PIN_FORMAT:"Admins need a security PIN of 4 to 8 digits.",SELF_DEMOTE:"You can't remove your own admin access. Ask another admin to do it.",LAST_ADMIN:"Keep at least one admin account.",SELF_DELETE:"You can't delete your own account.",NOT_ALLOWED:"Your account isn't allowed to do that.",unavailable:"Couldn't reach the server. Check your internet and try again."};
+function friendly(e){return FRIENDLY[e&&e.code]||"Something went wrong. Try again."}
+
+/* settings writes (admins): services, colors, staff list */
+async function configSave(key,patch){
+  for(let t=1;;t++){
+    try{await rpcAuthed("sched_config_save",{p_key:key,p_patch:patch});broadcast(null);setTimeout(refreshNow,300);return}
+    catch(e){if(e.code!=="unavailable"||t>=4)throw {code:e.code,message:friendly(e)};await sleep(800*t)}
+  }
+}
+
+/* calendar + report writes: queued per day, one item at a time, retried */
+function queueWrite(date,patch){const op={key:uid(),date,patch,tries:0};state.pending.push(op);persistUnsaved();render();run(op)}
+function run(op){chains[op.date]=(chains[op.date]||Promise.resolve()).then(()=>attempt(op)).catch(()=>{})}
+async function sendPatch(date,p){
+  for(const [id,v] of Object.entries(p.entries||{}))await rpcAuthed("sched_save_entry",{p_id:id,p_day:date,p_data:v||{deleted:true}});
+  for(const [sid,v] of Object.entries(p.status||{}))await rpcAuthed("sched_set_status",{p_day:date,p_staff:sid,p_status:v||""});
+  for(const [kind,key] of [["expense","expenses"],["saving","savings"]])
+    for(const [id,v] of Object.entries(p[key]||{}))await rpcAuthed("sched_save_money",{p_id:id,p_day:date,p_kind:kind,p_desc:v?v.desc:"",p_amount:v?v.amount:0,p_deleted:!v});
+  if(typeof p.dayNote==="string")await rpcAuthed("sched_save_note",{p_day:date,p_note:p.dayNote});
+}
+function applyToBase(date,p){
+  const bases=[];if(date===state.date&&state.day)bases.push(state.day);if(state.week[date])bases.push(state.week[date]);
+  for(const b of bases){
+    for(const [k,v] of Object.entries(p.entries||{}))b.entries[k]=v||{deleted:true};
+    for(const [k,v] of Object.entries(p.status||{}))b.status[k]=v;
+    for(const [k,v] of Object.entries(p.expenses||{})){if(v)b.expenses[k]=v;else delete b.expenses[k]}
+    for(const [k,v] of Object.entries(p.savings||{})){if(v)b.savings[k]=v;else delete b.savings[k]}
+    if(typeof p.dayNote==="string")b.dayNote=p.dayNote;
+  }
+}
+async function attempt(op){
+  for(;;){
+    if(!state.token){op.waiting=true;return} // resumes after the next sign-in
+    try{
+      await sendPatch(op.date,op.patch);
+      applyToBase(op.date,op.patch);
+      state.pending=state.pending.filter(o=>o!==op);persistUnsaved();render();
+      broadcast(op.date);refreshSoon();return;
+    }catch(e){op.tries++;const code=e&&e.code;
+      if(code==="SIGNED_OUT"||code==="PIN_REQUIRED"){op.waiting=true;return}
+      if(code==="NOT_ALLOWED")return fail(op,"Your account can only view the schedule, so the change was not saved.");
+      if(code!=="unavailable"&&op.tries>=3)return fail(op,"The server refused this change. Tap the red status to try again.");
+      if(op.tries>=6)return fail(op,"Couldn't reach the server. Check your internet, then tap the red status to retry.");
+      await sleep(Math.min(8000,700*2**op.tries)+Math.random()*400);
+    }
+  }
+}
+function resumeWaiting(){for(const op of state.pending)if(op.waiting){op.waiting=false;op.tries=0;run(op)}}
+function fail(op,msg){state.pending=state.pending.filter(o=>o!==op);if(!state.failed.includes(op))state.failed.push(op);state.lastError=msg;persistUnsaved();render()}
+function retryFailed(){const list=state.failed;state.failed=[];state.lastError="";for(const op of list){op.tries=0;state.pending.push(op);run(op)}render()}
+
+/* ---------- loading (with live updates) ---------- */
+function buildDay(r,date){
+  const day={entries:{},status:{},expenses:{},savings:{},dayNote:""};
+  for(const e of r.entries||[])if(e.day===date)day.entries[e.id]=Object.assign({},e.data,{deleted:!!e.deleted});
+  for(const d of r.days||[])if(d.day===date){day.status=Object.assign({},d.status||{});day.dayNote=d.note||""}
+  for(const m of r.money||[])if(m.day===date)(m.kind==="expense"?day.expenses:day.savings)[m.id]={desc:m.desc,amount:Number(m.amount),createdAt:m.createdAt,createdBy:m.createdBy};
+  return day;
+}
+function applyConfig(r){
+  const c=r.config||{};
+  state.staff=(c.main&&Array.isArray(c.main.staff)&&c.main.staff.length)?c.main.staff:null;
+  state.services=(c.services&&c.services.items)||{};
+  const ci=(c.colors&&c.colors.items)||{};
+  if(JSON.stringify(ci)!==JSON.stringify(state.colorItems)){state.colorItems=ci;if(!colorsDirty&&state.tab==="colors")renderColors()}
+  if(Array.isArray(r.users)){const m={};for(const u of r.users)m[u.id]={name:u.name,role:u.role,hasPin:u.hasPin,createdAt:u.createdAt,hash:"x"};state.users=m}
+  if(r.me&&state.userId===r.me.id&&r.me.role!==state.role){signOut("Your access level was changed. Please sign in again.")}
+}
+let loadSeq=0;
+async function loadDay(){
+  if(!state.token)return;
+  const date=state.date,seq=++loadSeq;
+  try{
+    const r=await rpcAuthed("sched_load",{p_from:date,p_to:date});
+    if(seq!==loadSeq||date!==state.date)return;
+    applyConfig(r);state.day=buildDay(r,date);state.dayLoaded=true;state.lastSync=Date.now();state.offline=false;render();
+  }catch(e){if(e.code==="unavailable"){state.offline=true;renderStatus()}}
+}
+async function loadWeek(){
+  if(!state.token||state.view!=="week")return;
+  const ws=weekStart(state.date),we=addDays(ws,6);
+  try{
+    const r=await rpcAuthed("sched_load",{p_from:ws,p_to:we});
+    if(weekStart(state.date)!==ws)return;
+    applyConfig(r);const w={};for(let d=ws;d<=we;d=addDays(d,1))w[d]=buildDay(r,d);state.week=w;state.weekKey=ws;render();
+  }catch(e){}
+}
+function subscribeDay(){state.day=null;state.dayLoaded=false;render();loadDay()}
+function subscribeWeek(){if(state.weekKey!==weekStart(state.date))state.week={};loadWeek()}
+function stopWeek(){state.weekKey=""}
+let refreshTimer=null;
+function refreshSoon(){clearTimeout(refreshTimer);refreshTimer=setTimeout(refreshNow,250)}
+function refreshNow(){if(!state.token||state.dragging)return;loadDay();if(state.view==="week")loadWeek();if(state.tab==="perf")loadPerf();if(state.tab==="notes"&&$("note-modal").hidden)loadNotes()}
+// live: each screen checks for changes every 10 seconds, when it comes back into view, and right after saving
+let channel=null;
+function startLive(){
+  if(!sb||channel)return;
+  try{
+    channel=sb.channel("stretchlab-schedule",{config:{broadcast:{self:false}}});
+    channel.on("broadcast",{event:"changed"},msg=>{const d=msg&&msg.payload&&msg.payload.day;
+      if(!d||d===state.date||(state.view==="week"&&d>=weekStart(state.date)&&d<=addDays(weekStart(state.date),6)))refreshSoon()});
+    channel.subscribe();
+  }catch(e){channel=null}
+}
+function broadcast(day){try{if(channel)channel.send({type:"broadcast",event:"changed",payload:{day}})}catch(e){}}
+setInterval(()=>{if(state.token&&document.visibilityState==="visible")refreshNow()},10000);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")refreshSoon()});
+window.addEventListener("online",()=>{state.offline=false;resumeWaiting();retryFailed();refreshSoon()});
+window.addEventListener("offline",()=>{state.offline=true;renderStatus()});
+
+/* merged view of a day (server + this device's unsaved changes) */
+function mergedDay(date,baseData){
+  const base=baseData||((date===state.date&&state.day)||{});
+  const entries={...(base.entries||{})},status={...(base.status||{})},flags={};
+  const expenses={...(base.expenses||{})},savings={...(base.savings||{})},moneyFlags={};
+  let dayNote=typeof base.dayNote==="string"?base.dayNote:"",noteFlag="";
+  const apply=(list,flag)=>{for(const op of list){if(op.date!==date)continue;
+    for(const [k,v] of Object.entries(op.patch.entries||{})){entries[k]=v;flags[k]=flag}
+    for(const [k,v] of Object.entries(op.patch.status||{}))status[k]=v;
+    for(const [k,v] of Object.entries(op.patch.expenses||{})){expenses[k]=v;moneyFlags[k]=flag}
+    for(const [k,v] of Object.entries(op.patch.savings||{})){savings[k]=v;moneyFlags[k]=flag}
+    if(typeof op.patch.dayNote==="string"){dayNote=op.patch.dayNote;noteFlag=flag}}};
+  apply(state.pending,"pending");apply(state.failed,"failed");
+  const live={},trash={};
+  for(const [k,v] of Object.entries(entries)){if(!v)continue;if(v.deleted)trash[k]=v;else live[k]=v}
+  return {entries:live,trash,status,flags,expenses,savings,moneyFlags,dayNote,noteFlag};
+}
+
+/* overlap layout: split a slot into side-by-side lanes */
+function layout(list){
+  list.sort((a,b)=>a.start-b.start||b.dur-a.dur);
+  let cluster=[],lanes=[],clusterEnd=-1;
+  const flush=()=>{for(const it of cluster)it.cols=lanes.length;cluster=[];lanes=[];clusterEnd=-1};
+  for(const it of list){
+    if(cluster.length&&it.start>=clusterEnd)flush();
+    const end=it.start+it.dur;let lane=lanes.findIndex(e=>e<=it.start);
+    if(lane<0){lane=lanes.length;lanes.push(end)}else lanes[lane]=end;
+    it.lane=lane;cluster.push(it);clusterEnd=Math.max(clusterEnd,end);
+  }
+  flush();return list;
+}
+
+/* render */
+function render(){renderStatus();if(state.tab==="cal")renderCalendar();else if(state.tab==="svc")renderServices();else if(state.tab==="report")renderReport();else if(state.tab==="notes")renderNotes();else if(state.tab==="users")renderUsers()}
+function renderStatus(){
+  applyRoleNav();
+  $("role").textContent=(ROLE_LABEL[state.role]||"Not signed in")+(state.userName?" · "+state.userName:"");
+  $("role-sub").textContent=state.offline?"Offline · changes will save when back online":(ROLE_SUB[state.role]||"");
+  const ss=$("save-status"),n=state.pending.length,f=state.failed.length;
+  if(f){ss.className="pill bad";ss.lastElementChild.textContent=f+" not saved · Tap to retry";ss.title=state.lastError||""}
+  else if(n){ss.className="pill busy";ss.lastElementChild.textContent="Saving "+n+"…"}
+  else if(state.dayLoaded){ss.className="pill ok";ss.lastElementChild.textContent="All changes saved"}
+  else{ss.className="pill";ss.lastElementChild.textContent=state.offline?"Offline":"Loading"}
+  if(state.offline&&!f){ss.className="pill busy";ss.lastElementChild.textContent=n?"Offline · "+n+" waiting to save":"Offline"}
+}
+function renderLegend(){
+  $("legend").innerHTML=colorList().map(c=>'<span><i style="background:'+c.bg+'"></i>'+esc(c.label)+'</span>').join("")+'<span><i style="background:'+PAID_BG+'"></i>Paid</span><span><i class="lgnote"></i>Note</span>';
+}
+function renderCalendar(){
+  if(state.dragging){state.renderPending=true;return}
+  const isWeek=state.view==="week";
+  $("view-mode").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.view===state.view)));
+  $("date-pick").value=state.date;
+  $("edit-staff").hidden=!state.canConfig;
+  {const n=Object.keys(mergedDay(state.date).trash).length;$("trash-btn").hidden=!state.canWrite||isWeek;$("trash-btn").textContent="Recently deleted"+(n?" ("+n+")":"")}
+  $("gridwrap").hidden=isWeek;$("week-wrap").hidden=!isWeek;
+  $("prev").setAttribute("aria-label",isWeek?"Previous week":"Previous day");$("next").setAttribute("aria-label",isWeek?"Next week":"Next day");
+  renderNotice();renderLegend();
+  if(isWeek){renderWeek();return}
+  $("date-label").textContent=longDate(state.date);
+  $("hint").textContent=state.canWrite?"Click an empty slot to add a client or note. Drag a session to move it (on a phone, press and hold first). Sessions at the same time split the slot side by side.":"View only. Ask an admin to add or change sessions.";
+  $("grid").classList.toggle("can-drag",state.canWrite);
+
+  const staff=staffList(),day=mergedDay(state.date),grid=$("grid");
+  grid.style.setProperty("--cols",staff.length);
+  const byStaff={};staff.forEach(s=>byStaff[s.id]=[]);
+  let total=0;
+  for(const [id,e] of Object.entries(day.entries)){
+    if(!e||!byStaff[e.staff])continue;
+    byStaff[e.staff].push({id,e,start:e.start,dur:e.dur});
+    if(counts(e))total++;
+  }
+  $("day-count").textContent=total;$("cap-label").textContent="/ "+CAPACITY+" clients "+(state.date===todayStr()?"today":"this day");
+
+  let h='<div class="corner"></div>';
+  for(const s of staff){
+    const st=day.status[s.id]||"",n=byStaff[s.id].filter(x=>counts(x.e)).length;
+    h+='<div class="colhead"><b title="'+esc(s.name)+'">'+esc(s.name)+'</b><span class="cnt">'+n+(n===1?" client":" clients")+'</span>';
+    if(state.canWrite){
+      h+='<div class="hpills"><button type="button" class="hp'+(st==="off"?" on-off":"")+'" data-st="off" data-for="'+esc(s.id)+'">'+(st==="off"?"Day off ✓":"Day off")+'</button>'+
+         '<button type="button" class="hp'+(st==="absent"?" on-absent":"")+'" data-st="absent" data-for="'+esc(s.id)+'">'+(st==="absent"?"Absent ✓":"Mark absent")+'</button></div>';
+    }else if(st)h+='<span class="hstat '+st+'">'+(st==="off"?"Day off":"Absent")+'</span>';
+    h+='</div>';
+  }
+  h+='<div class="times">';for(let i=0;i<SLOTS;i++)h+='<div>'+fmtTime(DAY_START+i*STEP)+'</div>';h+='</div>';
+  for(const s of staff){
+    const st=day.status[s.id]||"";
+    h+='<div class="col '+st+'" data-staff="'+esc(s.id)+'">';
+    if(st)h+='<span class="colflag">'+(st==="off"?"Day off":"Absent")+'</span>';
+    for(let i=0;i<SLOTS;i++){const m=DAY_START+i*STEP;
+      h+='<button type="button" class="slot" data-start="'+m+'"'+(state.canWrite?' aria-label="Add at '+fmtTime(m)+' for '+esc(s.name)+'"':' disabled tabindex="-1"')+'>'+fmtTime(m)+'</button>'}
+    for(const it of layout(byStaff[s.id])){
+      const e=it.e,top=(it.start-DAY_START)/STEP,hgt=it.dur/STEP,c=colorOf(e);
+      const isPaid=e.kind==="client"&&!!e.paid,isNote=e.kind==="note",bg=isPaid?PAID_BG:c.bg;
+      const cls=["entry",day.flags[it.id]||"",it.cols>1?"narrow":"",e.kind==="client"&&!c.counts?"uncounted":"",isPaid?"paid":"",isNote?"isnote":""].join(" ");
+      const nb=(e.needlingBy||[]).filter(x=>x!==e.staff);
+      const needleTxt=entryNeedles(e)&&nb.length?"Needling: "+nb.map(x=>x==="other"?"Other":staffName(x)).join(", "):"";
+      const note=(e.notes||"").split("\n")[0],svc=[serviceLabel(e),addonSummary(e)].filter(Boolean).join(" + ");
+      let extra="";
+      if(hgt>=2){ if(svc)extra+='<span class="es">'+esc(svc)+'</span>';
+        if(needleTxt)extra+='<span class="es"><b>'+esc(needleTxt)+'</b></span>';
+        if(note&&(hgt>=3||!svc)&&!(needleTxt&&hgt<3))extra+='<span class="eno">⚠ '+esc(note)+'</span>';
+        else if(!svc&&!note&&e.kind==="client"&&!c.counts)extra+='<span class="eno">'+esc(c.label)+'</span>'; }
+      h+='<button type="button" class="'+cls+'" data-id="'+esc(it.id)+'" style="background:'+bg+';color:'+ink(bg)+';top:calc(var(--slot)*'+top+');height:calc(var(--slot)*'+hgt+');left:calc('+(it.lane*100/it.cols)+'% + '+(it.lane?1:0)+'px);width:calc('+(100/it.cols)+'% - '+(it.cols>1?1:0)+'px)" title="'+esc((isNote?"NOTE: ":"")+(e.name||"")+" · "+fmtTime(e.start)+" – "+fmtTime(e.start+e.dur)+" · "+(isPaid?"PAID":c.label)+(svc?" · "+svc:"")+(needleTxt?" · "+needleTxt:"")+(e.notes?" · "+e.notes:""))+'">'+
+        '<span class="et">'+(isPaid?'<b>✓ PAID</b> · ':isNote?'<b>NOTE</b> · ':'')+fmtTime(e.start)+' – '+fmtTime(e.start+e.dur)+'</span>'+
+        '<span class="en">'+esc(e.name||"(no name)")+'</span>'+extra+'</button>';
+    }
+    h+='</div>';
+  }
+  if(state.date===todayStr()){const now=new Date(),m=now.getHours()*60+now.getMinutes();
+    if(m>=DAY_START&&m<=DAY_END)h+='<div class="nowhost"><div class="nowline" style="top:calc(var(--slot)*'+((m-DAY_START)/STEP)+')"></div></div>'}
+  grid.innerHTML=h;
+}
+function renderWeek(){
+  const ws=weekStart(state.date),we=addDays(ws,6),staff=staffList();
+  $("date-label").textContent="Week of "+shortDate(ws)+" – "+shortDate(we);
+  $("hint").textContent="Client counts per therapist. Tap a day to open its schedule.";
+  const days=[];for(let i=0;i<7;i++)days.push(addDays(ws,i));
+  let grand=0;const dayTot={},cell={};
+  for(const d of days){const md=mergedDay(d,state.week[d]||{});dayTot[d]=0;
+    for(const s of staff)cell[d+"|"+s.id]={n:0,st:md.status[s.id]||""};
+    for(const e of Object.values(md.entries)){if(counts(e)&&cell[d+"|"+e.staff]){cell[d+"|"+e.staff].n++;dayTot[d]++;grand++}}}
+  $("day-count").textContent=grand;$("cap-label").textContent="clients this week";
+  const t=todayStr();
+  let h='<thead><tr><th>Therapist</th>'+days.map(d=>'<th class="'+(d===t?"today":"")+'"><button type="button" data-day="'+d+'">'+pdate(d).toLocaleDateString("en-PH",{weekday:"short"})+'<br>'+shortDate(d)+'</button></th>').join("")+'<th>Total</th></tr></thead><tbody>';
+  for(const s of staff){let sum=0;
+    h+='<tr><th>'+esc(s.name)+'</th>'+days.map(d=>{const c=cell[d+"|"+s.id];sum+=c.n;
+      return '<td class="'+(c.n?"":"zero")+'"><b>'+c.n+'</b>'+(c.st?'<span class="tg '+c.st+'">'+(c.st==="off"?"Day off":"Absent")+'</span>':'')+'</td>'}).join("")+'<td><b>'+sum+'</b></td></tr>'}
+  h+='</tbody><tfoot><tr><th>Total</th>'+days.map(d=>'<td>'+dayTot[d]+'<span class="tg muted">/ '+CAPACITY+'</span></td>').join("")+'<td>'+grand+'</td></tr></tfoot>';
+  $("week-table").innerHTML=h;
+}
+function renderNotice(){
+  const nt=$("notice");
+  if(state.failed.length){nt.hidden=false;nt.className="notice bad";nt.textContent=(state.lastError||"Some changes were not saved.")+" They are kept on this device until saved."}
+  else if(state.noticeMsg){nt.hidden=false;nt.className="notice"+(state.noticeBad?" bad":"");nt.textContent=state.noticeMsg}
+  else nt.hidden=true;
+}
+function showNotice(msg,bad){state.noticeMsg=msg;state.noticeBad=!!bad;render()}
+
+/* ---------- services page ---------- */
+let svcEditing=null, svcDelArm=null;
+function renderServices(){
+  $("svc-form").hidden=!state.canServices;
+  $("svc-sub").textContent=state.canServices?"Main services are picked one per booking. Additional services (like dry needling) are added with a quantity on top of the main service.":"Services offered at the clinic. Ask an admin to add or change them.";
+  const acts=s=>state.canServices?'<td class="acts"><button type="button" class="btn sm" data-edit="'+esc(s.id)+'">Edit</button><button type="button" class="btn sm danger ghost'+(svcDelArm===s.id?" confirm":"")+'" data-del="'+esc(s.id)+'">'+(svcDelArm===s.id?"Tap again to delete":"Delete")+'</button></td>':'';
+  const price=s=>s.price||s.price===0?peso(s.price):'<span class="muted">—</span>';
+  const main=serviceList("main");
+  let h='<thead><tr><th>Service</th><th>Length</th><th class="num">Price</th>'+(state.canServices?'<th></th>':'')+'</tr></thead><tbody>';
+  if(!main.length)h+='<tr class="emptyrow"><td colspan="4">No main services yet.'+(state.canServices?' Add one above.':'')+'</td></tr>';
+  for(const s of main)h+='<tr class="'+(svcEditing===s.id?"editing":"")+'"><td><b>'+esc(s.name)+'</b></td><td>'+fmtDur(s.dur)+'</td><td class="num">'+price(s)+'</td>'+acts(s)+'</tr>';
+  $("svc-table").innerHTML=h+'</tbody>';
+  const add=serviceList("addon");
+  h='<thead><tr><th>Service</th><th>Counted per</th><th>Needling</th><th class="num">Price</th>'+(state.canServices?'<th></th>':'')+'</tr></thead><tbody>';
+  if(!add.length)h+='<tr class="emptyrow"><td colspan="5">No additional services yet.'+(state.canServices?' Add one above and set Type to "Additional service".':'')+'</td></tr>';
+  for(const s of add)h+='<tr class="'+(svcEditing===s.id?"editing":"")+'"><td><b>'+esc(s.name)+'</b></td><td>'+esc(s.unit||"each")+'</td><td>'+(s.areas>0?s.areas+(s.areas===1?" area each":" areas each"):'<span class="muted">—</span>')+'</td><td class="num">'+(s.price||s.price===0?peso(s.price)+' <span class="muted">/ '+esc(s.unit||"each")+'</span>':price(s))+'</td>'+acts(s)+'</tr>';
+  $("svc-addon-table").innerHTML=h+'</tbody>';
+}
+function syncSvcType(){const a=$("svc-type").value==="addon";document.querySelectorAll(".main-f").forEach(e=>e.hidden=a);document.querySelectorAll(".addon-f").forEach(e=>e.hidden=!a)}
+function resetSvcForm(){svcEditing=null;$("svc-name").value="";$("svc-type").value="main";$("svc-dur").value="60";$("svc-price").value="";$("svc-unit").value="";$("svc-areas").value="0";syncSvcType();
+  $("svc-form-title").textContent="Add a service";$("svc-save").textContent="Add service";$("svc-cancel").hidden=true;$("svc-err").hidden=true}
+async function saveService(ev){
+  ev.preventDefault();if(!state.canServices)return;
+  const name=$("svc-name").value.trim(),type=$("svc-type").value,dur=Number($("svc-dur").value),pr=$("svc-price").value.trim();
+  if(!name){$("svc-err").textContent="Enter the service name.";$("svc-err").hidden=false;$("svc-name").focus();return}
+  if(pr!==""&&!(Number(pr)>=0)){$("svc-err").textContent="Enter the price as a number, or leave it blank.";$("svc-err").hidden=false;return}
+  const id=svcEditing||uid("sv"),prev=state.services[id]||{};
+  const item=type==="addon"
+    ?{name,type,unit:$("svc-unit").value.trim()||"area",areas:Number($("svc-areas").value),price:pr===""?null:Number(pr),order:prev.order??Date.now(),updatedAt:Date.now()}
+    :{name,type,dur,price:pr===""?null:Number(pr),updatedAt:Date.now()};
+  const btn=$("svc-save");btn.disabled=true;
+  state.services={...state.services,[id]:item};resetSvcForm();renderServices();
+  try{await configSave("services",{[id]:item})}
+  catch(e){$("svc-err").textContent=e.message||"Couldn't save the service.";$("svc-err").hidden=false}
+  btn.disabled=false;
+}
+async function deleteService(id){
+  if(svcDelArm!==id){svcDelArm=id;renderServices();return}
+  svcDelArm=null;const prev=state.services[id];state.services={...state.services,[id]:null};renderServices();
+  try{await configSave("services",{[id]:null})}
+  catch(e){state.services={...state.services,[id]:prev};renderServices();$("svc-err").textContent=e.message;$("svc-err").hidden=false}
+}
+
+/* ---------- daily report ---------- */
+let repTab="clients",noteDirty=false,noteTimer=null;const moneyDelArm={};
+function moneyList(map){return Object.entries(map||{}).filter(([,v])=>v&&typeof v.amount==="number").map(([id,v])=>({id,...v})).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0))}
+function drawMoney(p,list,flags,total,empty){
+  let h='<thead><tr><th>Added</th><th>Description</th><th class="num">Amount</th><th></th></tr></thead><tbody>';
+  if(!list.length)h+='<tr class="emptyrow"><td colspan="4">'+empty+'</td></tr>';
+  for(const x of list){const f=flags[x.id];
+    h+='<tr><td class="muted">'+(x.createdAt?new Date(x.createdAt).toLocaleTimeString("en-PH",{hour:"numeric",minute:"2-digit"}):"")+(f==="pending"?' · saving…':f==="failed"?' · <span style="color:var(--danger)">not saved</span>':'')+'</td><td style="white-space:normal"><b>'+esc(x.desc)+'</b></td><td class="num">'+money(x.amount)+'</td>'+
+      '<td class="acts"><button type="button" class="btn sm danger ghost'+(moneyDelArm[p]===x.id?" confirm":"")+'" data-mdel="'+p+'|'+esc(x.id)+'">'+(moneyDelArm[p]===x.id?"Tap again to delete":"Delete")+'</button></td></tr>'}
+  h+='</tbody>'+(list.length?'<tfoot><tr><td colspan="2">Total</td><td class="num">'+money(total)+'</td><td></td></tr></tfoot>':'');
+  $(p+"-table").innerHTML=h;
+}
+function addMoney(p,ev){
+  ev.preventDefault();if(!state.canWrite)return;
+  const desc=$(p+"-desc").value.trim(),amt=Number($(p+"-amt").value);
+  const err=$(p+"-err");
+  if(!desc){err.textContent="Enter what it was for.";err.hidden=false;$(p+"-desc").focus();return}
+  if(!(amt>0)){err.textContent="Enter an amount greater than zero.";err.hidden=false;$(p+"-amt").focus();return}
+  err.hidden=true;
+  const key=p==="exp"?"expenses":"savings";
+  queueWrite(state.date,{[key]:{[uid("m")]:{desc,amount:Math.round(amt*100)/100,createdAt:Date.now()}}});
+  $(p+"-desc").value="";$(p+"-amt").value="";$(p+"-desc").focus();
+}
+function saveNote(){
+  clearTimeout(noteTimer);if(!state.canWrite||!noteDirty)return;
+  noteDirty=false;queueWrite(state.date,{dayNote:$("day-note").value,dayNoteAt:Date.now()});
+}
+function renderReport(){
+  if(!(state.role==="admin"||state.role==="receptionist")){$("rep-stats").innerHTML="";$("rep-table").innerHTML='<tbody><tr class="emptyrow"><td>The daily report is for admins and receptionists.</td></tr></tbody>';return}
+  $("rep-label").textContent=longDateY(state.date);$("rep-pick").value=state.date;
+  const day=mergedDay(state.date);
+  const rows=Object.entries(day.entries).filter(([,e])=>e&&e.kind==="client").map(([id,e])=>({id,e,c:colorOf(e),b:billOf(e)})).sort((a,b)=>a.e.start-b.e.start||staffName(a.e.staff).localeCompare(staffName(b.e.staff)));
+  const seen=rows.filter(r=>r.c.counts),missed=rows.filter(r=>!r.c.counts);
+  const paidRows=seen.filter(r=>r.e.paid),unpaidRows=seen.filter(r=>!r.e.paid);
+  const T=paidRows.reduce((a,r)=>{a.sub+=r.b.sub;a.disc+=r.b.disc;a.total+=r.b.total;a.tip+=r.b.tip;return a},{sub:0,disc:0,total:0,tip:0});
+  const U=unpaidRows.reduce((a,r)=>a+r.b.total,0);
+  const exps=moneyList(day.expenses),savs=moneyList(day.savings);
+  const eT=exps.reduce((a,x)=>a+x.amount,0),sT=savs.reduce((a,x)=>a+x.amount,0);
+  $("rep-stats").innerHTML='<div class="stat"><small>Clients booked</small><b>'+seen.length+'</b></div><div class="stat" style="border-color:#7a4bc2"><small style="color:#7a4bc2">Paid · earnings</small><b>'+money(T.total)+'</b><small>'+paidRows.length+' paid</small></div><div class="stat"><small>Waiting to be paid</small><b style="color:'+(U?"var(--amber)":"inherit")+'">'+money(U)+'</b><small>'+unpaidRows.length+' not yet paid</small></div><div class="stat"><small>Discounts given</small><b>'+money(T.disc)+'</b></div><div class="stat"><small>Tips</small><b>'+money(T.tip)+'</b></div>'+
+    '<div class="stat"><small>By payment method</small>'+PAY_METHODS.concat([{id:"",label:"Not recorded"}]).map(m=>{const amt=paidRows.filter(r=>(r.e.payMethod||"")===m.id).reduce((a,r)=>a+r.b.total,0);return (amt||m.id)?'<div style="display:flex;justify-content:space-between;gap:8px;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums"><span>'+esc(m.label)+'</span><span>'+money(amt)+'</span></div>':''}).join("")+'</div>'+
+    '<div class="stat"><small>Expenses</small><b>'+money(eT)+'</b></div><div class="stat"><small>Savings set aside</small><b>'+money(sT)+'</b></div><div class="stat" title="Paid earnings minus expenses and savings. Tips not included."><small>Left after expenses + savings</small><b style="color:'+(T.total-eT-sT<0?"var(--danger)":"inherit")+'">'+money(T.total-eT-sT)+'</b></div>';
+  $("rep-tabs").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.rt===repTab)));
+  for(const k of ["clients","expenses","savings"])$("rt-"+k).hidden=k!==repTab;
+  drawMoney("exp",exps,day.moneyFlags,eT,"No expenses added for this day yet.");
+  drawMoney("sav",savs,day.moneyFlags,sT,"Nothing set aside for this day yet.");
+  const ta=$("day-note");
+  if(document.activeElement!==ta&&!noteDirty)ta.value=day.dayNote||"";
+  if(!noteDirty)$("day-note-msg").textContent=day.noteFlag==="pending"?"Saving…":day.noteFlag==="failed"?"Not saved yet. Tap the red status at the top of Schedule to retry.":day.dayNote?"Saved":"";
+  const svcCell=e=>{const m=serviceLabel(e),ad=(e.addons||[]).filter(a=>a&&a.qty>0);
+    let s=m?'<b>'+esc(m)+'</b>':'<span class="muted">No main service</span>';
+    for(const a of ad)s+='<small>+ '+esc(addonName(a))+(a.qty>1?' ×'+a.qty:'')+(typeof a.price==="number"?' · '+peso(a.price*a.qty):'')+'</small>';
+    if(entryNeedles(e)&&(e.needlingBy||[]).length)s+='<small class="nd">Needling: '+esc(e.needlingBy.map(x=>x==="other"?"Other":staffName(x)).join(", "))+'</small>';
+    if(e.notes)s+='<small>⚠ '+esc(e.notes.split("\n")[0])+'</small>';return s};
+  const discTxt=(e,b)=>b.disc?'−'+money(b.disc)+(e.discount&&e.discount.type==="pct"?' <span class="muted">('+e.discount.amt+'%)</span>':''):'<span class="muted">—</span>';
+  const row=(r,unc)=>'<tr class="'+(unc?"unc":r.e.paid?"":"unpaid")+'"><td>'+fmtTime(r.e.start)+'</td><td><b>'+esc(r.e.name)+'</b>'+(r.e.contact?'<small style="display:block" class="muted">'+esc(r.e.contact)+'</small>':'')+'</td><td>'+esc(staffName(r.e.staff))+'</td><td class="svcs">'+svcCell(r.e)+'</td><td><span class="chipc" style="background:'+(r.e.paid?PAID_BG:r.c.bg)+'"></span>'+esc(r.c.label)+(unc?'':r.e.paid?'<span class="paidchip">✓ Paid</span><span class="methodtag">'+esc(payLabel(r.e.payMethod))+'</span>':'<span class="unpaidchip">Unpaid</span>')+(r.e.nextVisit&&nextVisitText(r.e.nextVisit)?'<span class="nextvisit">Next: '+esc(nextVisitText(r.e.nextVisit))+'</span>':'')+'</td>'+
+    (unc?'<td class="num" colspan="4">Not billed</td>':'<td class="num">'+money(r.b.sub)+'</td><td class="num">'+discTxt(r.e,r.b)+'</td><td class="num"><b>'+money(r.b.total)+'</b></td><td class="num">'+(r.b.tip?money(r.b.tip):'<span class="muted">—</span>')+'</td>')+'</tr>';
+  let h='<thead><tr><th>Time</th><th>Client</th><th>Therapist</th><th>Services</th><th>Status</th><th class="num">Subtotal</th><th class="num">Discount</th><th class="num">Total bill</th><th class="num">Tip</th></tr></thead><tbody>';
+  if(!rows.length)h+='<tr class="emptyrow"><td colspan="9">No clients booked on this day.</td></tr>';
+  h+=seen.map(r=>row(r,false)).join("");
+  if(missed.length)h+='<tr><td colspan="9" class="subhead">Not counted ('+missed.length+')</td></tr>'+missed.map(r=>row(r,true)).join("");
+  h+='</tbody>';
+  if(seen.length)h+='<tfoot><tr><td colspan="5">Paid total · '+paidRows.length+' of '+seen.length+(seen.length===1?' client':' clients')+'</td><td class="num">'+money(T.sub)+'</td><td class="num">−'+money(T.disc)+'</td><td class="num">'+money(T.total)+'</td><td class="num">'+money(T.tip)+'</td></tr></tfoot>';
+  $("rep-table").innerHTML=h;
+  $("rep-hint").textContent="Only sessions marked Paid count toward earnings and totals. Unpaid sessions show their bill in grey until someone clicks Mark as paid. Tips are listed separately and are not part of the bill.";
+}
+
+/* ---------- daily notes ---------- */
+let notesMonth=todayStr().slice(0,7),notesCache={},noteOpen=null;
+function monthRange(ym){const [y,m]=ym.split("-").map(Number);return [dstr(new Date(y,m-1,1)),dstr(new Date(y,m,0))]}
+function noteFor(d){ // server copy overlaid with this device's unsaved changes
+  let n=notesCache[d]?{...notesCache[d]}:{note:"",noteAt:null,noteBy:""},flag="";
+  for(const op of state.pending)if(op.date===d&&typeof op.patch.dayNote==="string"){n.note=op.patch.dayNote;flag="pending"}
+  for(const op of state.failed)if(op.date===d&&typeof op.patch.dayNote==="string"){n.note=op.patch.dayNote;flag="failed"}
+  n.flag=flag;return n;
+}
+let notesSeq=0;
+async function loadNotes(){
+  const ym=notesMonth,[a,b]=monthRange(ym),seq=++notesSeq;
+  renderNotes();
+  try{
+    const r=await rpcAuthed("sched_notes_range",{p_from:a,p_to:b});
+    if(seq!==notesSeq)return;
+    for(let d=a;d<=b;d=addDays(d,1))delete notesCache[d];
+    for(const x of r||[])notesCache[x.day]={note:x.note||"",noteAt:x.noteAt,noteBy:x.noteBy||""};
+    notesCache["_"+ym]=true;renderNotes();
+  }catch(e){if(seq===notesSeq){$("notes-table").innerHTML='<tbody><tr class="emptyrow"><td>'+(e.code==="unavailable"?"Can't reach the server. Check your internet.":e.code==="error"||e.code==="NOT_ALLOWED"?"Couldn't load notes. The database update for Daily notes may not be installed yet (see the setup guide).":friendly(e))+'</td></tr></tbody>'}}
+}
+function fmtStamp(t){return t?new Date(t).toLocaleString("en-PH",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):""}
+function renderNotes(){
+  const [a,b]=monthRange(notesMonth),t=todayStr();
+  $("notes-label").textContent=pdate(a).toLocaleDateString("en-PH",{month:"long",year:"numeric"});
+  if(!notesCache["_"+notesMonth]){$("notes-table").innerHTML='<tbody><tr class="emptyrow"><td>Loading notes…</td></tr></tbody>';return}
+  const days=[];for(let d=b;d>=a;d=addDays(d,-1))if(d<=t||noteFor(d).note.trim())days.push(d); // newest first; future days only if they have a note
+  let h='<thead><tr><th style="width:190px">Date</th><th>Note</th><th style="width:190px">Last edited</th></tr></thead><tbody>';
+  if(!days.length)h+='<tr class="emptyrow"><td colspan="3">No notes for this month yet. Use “Today\'s note” or the day arrows inside a note to write ahead.</td></tr>';
+  for(const d of days){const n=noteFor(d),has=!!n.note.trim();
+    h+='<tr data-day="'+d+'" class="'+(d===t?"today":"")+'"><td><b>'+pdate(d).toLocaleDateString("en-PH",{weekday:"short",month:"short",day:"numeric"})+'</b></td>'+
+      '<td class="prev'+(has?'':' empty')+'"><span>'+(has?esc(n.note):(d>t?"—":"No note"))+'</span></td>'+
+      '<td class="muted">'+(n.flag==="pending"?"Saving…":n.flag==="failed"?'<span style="color:var(--danger)">Not saved yet</span>':(has&&n.noteBy?esc(n.noteBy)+" · "+fmtStamp(n.noteAt):""))+'</td></tr>'}
+  $("notes-table").innerHTML=h+'</tbody>';
+}
+function openNoteDay(d){
+  if(state.tab!=="notes")return;
+  if(d.slice(0,7)!==notesMonth){notesMonth=d.slice(0,7);loadNotes().then(()=>openNoteDay(d));return}
+  const n=noteFor(d),ro=!state.canWrite;
+  noteOpen={day:d,base:n.note,baseAt:n.noteAt,force:false};
+  $("note-title").textContent=longDateY(d)+(d===todayStr()?" · Today":"");
+  $("note-text").value=n.note;$("note-text").readOnly=ro;
+  $("note-meta").textContent=n.flag==="pending"?"Saving…":n.flag==="failed"?"Not saved yet — will retry when you're back online.":(n.noteBy?"Last edited by "+n.noteBy+" on "+fmtStamp(n.noteAt):"No note yet for this day.");
+  $("note-err").hidden=true;$("note-save").hidden=ro;$("note-save").textContent="Save note";$("note-save").disabled=false;
+  $("note-count").textContent="";$("note-modal").hidden=false;
+  setTimeout(()=>{const ta=$("note-text");ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length)},0);
+}
+function noteDirtyNow(){return noteOpen&&$("note-text").value!==noteOpen.base}
+function closeNote(force){
+  if(!force&&noteDirtyNow()&&state.canWrite){$("note-err").textContent="You have unsaved changes. Click Save note, or Close again to discard them.";$("note-err").hidden=false;noteOpen.closeArmed=(noteOpen.closeArmed||0)+1;if(noteOpen.closeArmed<2)return}
+  $("note-modal").hidden=true;noteOpen=null;renderNotes();
+}
+async function saveDayNote(ev){
+  ev.preventDefault();if(!noteOpen||!state.canWrite)return;
+  const d=noteOpen.day,text=$("note-text").value,btn=$("note-save");
+  if(!noteOpen.force){ // safeguard: did someone else change this day's note while it was open here?
+    btn.disabled=true;
+    try{const r=await rpcAuthed("sched_notes_range",{p_from:d,p_to:d});const s=(r&&r[0])||{note:"",noteAt:null,noteBy:""};
+      if((s.note||"")!==(noteOpen.base||"")&&(s.note||"")!==text){
+        notesCache[d]={note:s.note||"",noteAt:s.noteAt,noteBy:s.noteBy||""};
+        $("note-err").textContent=(s.noteBy||"Someone else")+" changed this note while you had it open. Copy anything you need, then Close to see their version — or click Save anyway to replace it with yours.";
+        $("note-err").hidden=false;btn.textContent="Save anyway";btn.disabled=false;noteOpen.force=true;return}
+    }catch(e){/* offline: save normally, it queues and retries */}
+    btn.disabled=false;
+  }
+  queueWrite(d,{dayNote:text});
+  notesCache[d]={note:text,noteAt:Date.now(),noteBy:state.userName||""};
+  if(d===state.date&&!noteDirty)$("day-note").value=text;
+  $("note-modal").hidden=true;noteOpen=null;renderNotes();
+  showToast("Note saved for "+pdate(d).toLocaleDateString("en-PH",{weekday:"short",month:"short",day:"numeric"})+".",null);
+}
+
+/* ---------- color codes page ---------- */
+let colorDraft=[], colorsDirty=false;
+function renderColors(){
+  colorDraft=colorList().map(c=>({...c}));colorsDirty=false;drawColorRows();
+}
+function drawColorRows(){
+  const ro=!state.canConfig;
+  $("colors-sub").textContent=ro?"What each color on the calendar means.":"Rename any color or change its shade. You can add up to 5 extra colors. Untick “Count as client” for colors like Cancelled so those bookings don't count in Performance.";
+  $("color-rows").innerHTML=colorDraft.map((c,i)=>'<div class="crow">'+
+    (ro?'<span class="chip" style="background:'+c.bg+'"></span>':'<input type="color" id="cc-'+i+'" value="'+c.bg+'" aria-label="Color for '+esc(c.label)+'">')+
+    (ro?'<b>'+esc(c.label)+(c.counts?'':' <span class="muted" style="font-weight:500">· not counted</span>')+'</b>':'<input type="text" id="cl-'+i+'" value="'+esc(c.label)+'" maxlength="24" aria-label="Name">')+
+    '<span class="preview" id="cp-'+i+'" style="background:'+c.bg+';color:'+ink(c.bg)+'"><small>9:00 AM – 10:00 AM</small>'+esc(c.label)+'</span>'+
+    (ro?'':'<span style="display:flex;gap:10px;align-items:center"><label class="chk"><input type="checkbox" id="cn-'+i+'"'+(c.counts?" checked":"")+'>Count as client</label>'+(c.builtin?'':'<button type="button" class="btn sm danger ghost" data-rmc="'+i+'">Remove</button>')+'</span>')+
+    '</div>').join("");
+  $("color-foot").hidden=ro;
+  const left=MAX_CUSTOM_COLORS-colorDraft.filter(c=>!c.builtin).length;
+  $("color-add").disabled=left<=0;$("color-left").textContent=left>0?left+" of 5 extra colors left":"All 5 extra colors used";
+}
+function syncColorDraft(){colorDraft.forEach((c,i)=>{const a=$("cc-"+i),b=$("cl-"+i),n=$("cn-"+i);if(a)c.bg=a.value;if(b)c.label=b.value;if(n)c.counts=n.checked})}
+async function saveColors(){
+  syncColorDraft();
+  if(colorDraft.some(c=>!c.label.trim())){$("color-msg").className="err";$("color-msg").textContent="Give every color a name.";return}
+  const items={},current=colorList();
+  colorDraft.forEach((c,i)=>{items[c.id]={label:c.label.trim(),bg:c.bg,counts:c.counts,order:c.builtin?i:(c.order??100+i)}});
+  for(const c of current)if(!c.builtin&&!colorDraft.some(d=>d.id===c.id))items[c.id]=null;
+  const btn=$("color-save");btn.disabled=true;$("color-msg").className="muted";$("color-msg").textContent="Saving…";
+  try{await configSave("colors",items);colorsDirty=false;$("color-msg").className="ok-msg";$("color-msg").textContent="Saved"}
+  catch(e){$("color-msg").className="err";$("color-msg").textContent=e.message}
+  btn.disabled=false;
+}
+
+/* ---------- entry modal ---------- */
+const M={id:null,kind:"client",dur:60,color:"reserved",original:null};
+function setSeg(el,attr,val){el.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset[attr]===String(val))))}
+function refreshDurButtons(){
+  const start=Number($("m-start").value);
+  if(start+M.dur>DAY_END){M.dur=DAY_END-start;setSeg($("m-dur"),"dur",M.dur)}
+  $("m-dur").querySelectorAll("button").forEach(b=>{b.disabled=!state.canWrite||start+Number(b.dataset.dur)>DAY_END});
+}
+function drawColorSwatches(){
+  $("m-color").innerHTML=colorList().map(c=>'<button type="button" class="sw" data-v="'+esc(c.id)+'" aria-pressed="'+(c.id===M.color)+'" style="background:'+c.bg+';color:'+ink(c.bg)+'"'+(state.canWrite?'':' disabled')+'>'+esc(c.label)+'</button>').join("");
+}
+function setKind(k){M.kind=k;setSeg($("m-kind"),"kind",k);if(typeof updatePaidUI==="function")updatePaidUI();
+  document.querySelectorAll(".client-only").forEach(el=>el.hidden=k!=="client");
+  $("m-name-label").textContent=k==="client"?"Client name":"Note title"}
+function drawAddons(){
+  const ro=!state.canWrite,list=serviceList("addon");
+  const extra=Object.keys(M.addons).filter(id=>!list.some(s=>s.id===id)&&M.addons[id]>0).map(id=>({id,...M.addonSnap[id],type:"addon"}));
+  const all=list.concat(extra);
+  $("m-addons-wrap").hidden=M.kind!=="client"||(!all.length&&ro);
+  $("m-addons").innerHTML=all.length?all.map(s=>{const q=M.addons[s.id]||0,u=s.unit||"each";
+    return '<div class="arow'+(q?" has":"")+'"><span class="an">'+esc(s.name||"Add-on")+(s.price||s.price===0?'<small>'+peso(s.price)+'/'+esc(u)+'</small>':'')+(s.areas>0?'<span class="tagpill">Needling</span>':'')+'</span>'+
+      '<span class="stepper"><button type="button" data-addon="'+esc(s.id)+'" data-d="-1" aria-label="Fewer '+esc(s.name)+'"'+(ro||!q?" disabled":"")+'>−</button><output>'+q+'</output><button type="button" data-addon="'+esc(s.id)+'" data-d="1" aria-label="More '+esc(s.name)+'"'+(ro?" disabled":"")+'>+</button><span class="u">'+esc(q===1?u:plural(u))+'</span></span></div>'}).join("")
+    :'<div class="arow muted">No additional services yet. Add them in Services.</div>';
+  const needs=Object.entries(M.addons).some(([id,q])=>q>0&&((state.services[id]&&Number(state.services[id].areas)>0)||(M.addonSnap[id]&&M.addonSnap[id].areas>0)));
+  $("m-needle-wrap").hidden=M.kind!=="client"||!needs;
+  if(needs){
+    const opts=staffList().map(s=>({id:s.id,name:s.name})).concat([{id:"other",name:"Other"}]);
+    for(const id of M.needleBy)if(!opts.some(o=>o.id===id))opts.push({id,name:staffName(id)});
+    $("m-needle-by").innerHTML=opts.map(o=>'<label><input type="checkbox" value="'+esc(o.id)+'"'+(M.needleBy.has(o.id)?" checked":"")+(ro?" disabled":"")+'>'+esc(o.name)+'</label>').join("");
+  }
+  updateBill();
+}
+function modalBill(){
+  const sid=$("m-service").value,s=state.services[sid];
+  const main=s&&typeof s.price==="number"?s.price:(M.original&&M.original.serviceId===sid&&typeof M.original.servicePrice==="number"?M.original.servicePrice:0);
+  const addons=Object.entries(M.addons).map(([id,q])=>{const x=state.services[id]||M.addonSnap[id]||{};return {qty:q,price:typeof x.price==="number"?x.price:0}});
+  return calcBill(main,addons,{amt:Number($("m-disc").value)||0,type:$("m-disc-type").value},Number($("m-tip").value)||0);
+}
+function updateBill(){
+  const b=modalBill();
+  $("m-bill").innerHTML='<div><span>Subtotal</span><span>'+money(b.sub)+'</span></div>'+
+    (b.disc?'<div><span>Discount</span><span>−'+money(b.disc)+'</span></div>':'')+
+    '<div class="tot"><span>Total bill</span><span>'+money(b.total)+'</span></div>'+
+    (b.tip?'<div class="muted"><span>Tip (not in bill)</span><span>'+money(b.tip)+'</span></div>':'');
+}
+function plural(u){return /s$/i.test(u)||u==="each"?u:u+"s"}
+function updatePaidUI(){
+  const btn=$("m-paid"),info=$("m-paidinfo"),client=M.kind==="client";
+  btn.hidden=!state.canWrite||!client;
+  btn.textContent=M.paid?"Undo paid":"Mark as paid";btn.classList.toggle("undo",!!M.paid);
+  if(client&&M.paid){
+    const at=M.paidAt?new Date(M.paidAt).toLocaleString("en-PH",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):"";
+    const nv=nextVisitText(M.nextVisit);
+    info.textContent="✓ Paid · "+money(modalBill().total)+" · "+payLabel(M.payMethod)+(M.paidBy?" · marked by "+M.paidBy:"")+(at?" on "+at:"")+(nv?" · Next visit: "+nv:"");info.hidden=false;
+  }else info.hidden=true;
+}
+function togglePaid(){
+  if(!state.canWrite||M.kind!=="client")return;
+  if(M.paid){finishPaid(false);return}
+  // quick checks before asking for payment details
+  if(!$("m-name").value.trim()){$("m-err").textContent="Enter the client's name first.";$("m-err").hidden=false;$("m-name").focus();return}
+  openPay();
+}
+let payPick=null;
+function openPay(){
+  payPick=M.payMethod||null;
+  $("pay-sum").textContent=($("m-name").value.trim()||"Client")+" · Total bill "+money(modalBill().total);
+  $("pay-methods").innerHTML=PAY_METHODS.map(m=>'<button type="button" data-m="'+m.id+'" aria-pressed="'+(payPick===m.id)+'">'+esc(m.label)+'</button>').join("");
+  $("pay-next-date").value=M.nextVisit&&M.nextVisit.date||"";$("pay-next-note").value=M.nextVisit&&M.nextVisit.note||"";
+  $("pay-err").hidden=true;syncPay();$("pay-modal").hidden=false;
+  setTimeout(()=>{const b=$("pay-methods").querySelector("button");if(b)b.focus()},0);
+}
+function payValid(){return !!payPick&&!!($("pay-next-date").value||$("pay-next-note").value.trim())}
+function syncPay(){$("pay-submit").disabled=!payValid()}
+function closePay(){$("pay-modal").hidden=true}
+function submitPay(ev){
+  ev.preventDefault();
+  if(!payPick){$("pay-err").textContent="Choose how the client paid.";$("pay-err").hidden=false;return}
+  if(!($("pay-next-date").value||$("pay-next-note").value.trim())){$("pay-err").textContent="Enter the next visit: a date or a note.";$("pay-err").hidden=false;$("pay-next-date").focus();return}
+  M.payMethod=payPick;
+  M.nextVisit={date:$("pay-next-date").value||"",note:$("pay-next-note").value.trim()};
+  closePay();finishPaid(true);
+}
+function finishPaid(marking){
+  const prev={paid:M.paid,paidAt:M.paidAt,paidBy:M.paidBy,payMethod:M.payMethod};
+  M.paid=marking;M.paidAt=marking?Date.now():null;M.paidBy=marking?(state.userName||""):null;if(!marking)M.payMethod=null;
+  const name=$("m-name").value.trim(),total=modalBill().total,method=payLabel(M.payMethod);
+  saveEntry({preventDefault(){}});
+  if(!$("modal").hidden){Object.assign(M,prev);updatePaidUI();return} // not saved (missing info or a conflict warning)
+  showToast(marking?("Paid: "+(name||"client")+" · "+money(total)+" · "+method+". Added to today's earnings."):("Undid paid for "+(name||"client")+". Removed from earnings."),null);
+}
+function openEntry(id,preset){
+  const day=mergedDay(state.date),e=id?day.entries[id]:null,ro=!state.canWrite;
+  M.id=id;M.original=e;
+  $("m-title").textContent=ro?"Session details":id?"Edit session":"New session";
+  $("m-staff").innerHTML=staffList().map(s=>'<option value="'+esc(s.id)+'">'+esc(s.name)+'</option>').join("")+(e&&!staffList().some(s=>s.id===e.staff)?'<option value="'+esc(e.staff)+'">Former staff</option>':"");
+  let opts="";for(let i=0;i<SLOTS;i++){const m=DAY_START+i*STEP;opts+='<option value="'+m+'">'+fmtTime(m)+'</option>'}
+  $("m-start").innerHTML=opts;
+  const svcs=serviceList("main");
+  let so='<option value="">'+(svcs.length?"Choose a main service":"No services yet — add them in Services")+'</option>'+svcs.map(s=>'<option value="'+esc(s.id)+'">'+esc(s.name)+' · '+fmtDur(s.dur)+(s.price||s.price===0?' · '+peso(s.price):'')+'</option>').join("");
+  if(e&&e.serviceId&&!svcs.some(s=>s.id===e.serviceId))so+='<option value="'+esc(e.serviceId)+'">'+esc(e.serviceName||"Removed service")+'</option>';
+  $("m-service").innerHTML=so;
+  M.addons={};M.addonSnap={};(e&&e.addons||[]).forEach(a=>{if(a&&a.qty>0){M.addons[a.id]=a.qty;M.addonSnap[a.id]=a}});
+  M.needleBy=new Set((e&&e.needlingBy)||[]);
+  $("m-disc").value=e&&e.discount&&e.discount.amt>0?e.discount.amt:"";$("m-disc-type").value=e&&e.discount&&e.discount.type==="pct"?"pct":"amt";
+  $("m-tip").value=e&&Number(e.tip)>0?e.tip:"";
+  const src=e||{kind:"client",staff:preset.staff,start:preset.start,dur:60};
+  $("m-staff").value=src.staff;$("m-start").value=String(src.start);
+  $("m-name").value=src.name||"";$("m-contact").value=src.contact||"";$("m-notes").value=src.notes||"";
+  $("m-service").value=src.serviceId||"";
+  M.color=e?colorOf(e).id:"reserved";
+  M.dur=src.dur||60;setSeg($("m-dur"),"dur",M.dur);setKind(src.kind||"client");drawColorSwatches();drawAddons();
+  for(const el of $("entry-form").querySelectorAll("input,select,textarea,.seg button,.stepper button"))el.disabled=ro;
+  refreshDurButtons();
+  $("m-save").hidden=ro;$("m-delete").hidden=ro||!id;$("m-cancel").textContent=ro?"Close":"Cancel";
+  const del=$("m-delete");del.classList.remove("confirm");del.textContent="Delete";
+  $("m-err").hidden=true;$("modal").hidden=false;
+  M.force=false;$("m-save").textContent="Save";
+  M.paid=!!(e&&e.paid);M.paidAt=e&&e.paidAt||null;M.paidBy=e&&e.paidBy||null;M.payMethod=e&&e.payMethod||null;M.nextVisit=e&&e.nextVisit||null;closePay();updatePaidUI();
+  const at=t=>t?new Date(t).toLocaleString("en-PH",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):"";
+  const meta=e?[e.createdBy?"Added by "+e.createdBy+(e.createdAt?" on "+at(e.createdAt):""):"",e.updatedBy&&e.updatedAt&&e.updatedAt!==e.createdAt?"Last changed by "+e.updatedBy+" on "+at(e.updatedAt):""].filter(Boolean).join(" · "):"";
+  $("m-meta").textContent=meta;$("m-meta").hidden=!meta;
+  setTimeout(()=>{(ro?$("m-cancel"):$("m-name")).focus()},0);
+}
+function closeModal(){$("modal").hidden=true}
+function saveEntry(ev){
+  ev.preventDefault();if(!state.canWrite)return;
+  const name=$("m-name").value.trim();
+  if(!name){$("m-err").textContent=M.kind==="client"?"Enter the client's name.":"Enter a short title for the note.";$("m-err").hidden=false;$("m-name").focus();return}
+  const start=Number($("m-start").value);
+  if(start+M.dur>DAY_END){$("m-err").textContent="That session would run past 8:00 PM. Pick an earlier start or a shorter session.";$("m-err").hidden=false;return}
+  const sid=M.kind==="client"?$("m-service").value:"";
+  const svc=sid?(state.services[sid]||null):null;
+  let addons=[],needlingBy=[];
+  if(M.kind==="client"){
+    for(const [id,qty] of Object.entries(M.addons)){if(!(qty>0))continue;const s=state.services[id],old=M.addonSnap[id]||{};
+      addons.push({id,qty,name:(s&&s.name)||old.name||"",areas:s?Number(s.areas)||0:Number(old.areas)||0,unit:(s&&s.unit)||old.unit||"",price:s&&typeof s.price==="number"?s.price:(typeof old.price==="number"?old.price:null)})}
+    if(addons.some(a=>a.areas>0)){
+      needlingBy=[...M.needleBy];
+      if(!needlingBy.length){$("m-err").textContent="Tick the needling therapist. They can be different from the main therapist.";$("m-err").hidden=false;$("m-needle-wrap").scrollIntoView({block:"nearest"});return}
+    }
+  }
+  const entry={kind:M.kind,name,staff:$("m-staff").value,start,dur:M.dur,color:M.color,status:"",
+    contact:M.kind==="client"?$("m-contact").value.trim():"",
+    serviceId:sid,serviceName:sid?((svc&&svc.name)||(M.original&&M.original.serviceName)||""):"",
+    servicePrice:svc&&typeof svc.price==="number"?svc.price:(M.original&&M.original.serviceId===sid&&typeof M.original.servicePrice==="number"?M.original.servicePrice:null),
+    addons,needlingBy,
+    discount:M.kind==="client"&&Number($("m-disc").value)>0?{amt:Number($("m-disc").value),type:$("m-disc-type").value}:null,
+    tip:M.kind==="client"&&Number($("m-tip").value)>0?Number($("m-tip").value):0,
+    notes:$("m-notes").value.trim(),createdAt:(M.original&&M.original.createdAt)||Date.now(),updatedAt:Date.now(),
+    createdBy:(M.original&&M.original.createdBy)||state.userName||"",updatedBy:state.userName||"",deleted:false,
+    payMethod:M.kind==="client"&&M.paid?(M.payMethod||null):null,nextVisit:M.kind==="client"?(M.nextVisit||null):null,
+    paid:M.kind==="client"&&!!M.paid,paidAt:M.kind==="client"&&M.paid?(M.paidAt||Date.now()):null,paidBy:M.kind==="client"&&M.paid?(M.paidBy||state.userName||""):null};
+  // safeguard: someone else changed or deleted this session while it was open here
+  if(M.id&&!M.force){
+    const day=mergedDay(state.date),cur=day.entries[M.id];
+    const changed=!cur||(cur.updatedAt||0)!==((M.original&&M.original.updatedAt)||0);
+    if(changed){
+      $("m-err").textContent=!cur?(day.trash[M.id]?"Someone deleted this session while you had it open. Save anyway to bring it back with your changes.":"This session was removed while you had it open. Save anyway to keep your version.")
+        :"Someone else changed this session"+(cur.updatedBy?" ("+cur.updatedBy+")":"")+" while you had it open. Cancel and reopen it to see their version, or Save anyway to replace it with yours.";
+      $("m-err").hidden=false;$("m-save").textContent="Save anyway";M.force=true;return;
+    }
+  }
+  queueWrite(state.date,{entries:{[M.id||uid()]:entry}});closeModal();
+}
+function deleteEntry(){const b=$("m-delete");
+  if(!b.classList.contains("confirm")){b.classList.add("confirm");b.textContent="Tap again to delete";return}
+  const cur=mergedDay(state.date).entries[M.id]||M.original;if(!cur){closeModal();return}
+  const id=M.id,date=state.date,before={...cur};
+  queueWrite(date,{entries:{[id]:{...cur,deleted:true,deletedAt:Date.now(),deletedBy:state.userName||"",updatedAt:Date.now(),updatedBy:state.userName||""}}});
+  closeModal();
+  showToast("Deleted "+(cur.name||"session")+". It's in Recently deleted.",()=>queueWrite(date,{entries:{[id]:{...before,deleted:false,updatedAt:Date.now(),updatedBy:state.userName||""}}}));
+}
+/* recently deleted (per day) */
+function openTrash(){
+  const t=mergedDay(state.date).trash,list=Object.entries(t).sort((a,b)=>(b[1].deletedAt||0)-(a[1].deletedAt||0));
+  $("trash-title").textContent="Recently deleted · "+longDate(state.date);
+  $("trash-list").innerHTML=list.length?list.map(([id,e])=>'<div class="trow"><div style="min-width:0"><b>'+esc(e.name||"(no name)")+'</b><small>'+fmtTime(e.start)+' – '+fmtTime(e.start+e.dur)+' · '+esc(staffName(e.staff))+(serviceLabel(e)?' · '+esc(serviceLabel(e)):'')+'</small><small>Deleted'+(e.deletedBy?' by '+esc(e.deletedBy):'')+(e.deletedAt?' at '+new Date(e.deletedAt).toLocaleTimeString("en-PH",{hour:"numeric",minute:"2-digit"}):'')+'</small></div><button type="button" class="btn sm primary" data-restore="'+esc(id)+'">Restore</button></div>').join("")
+    :'<p class="muted" style="margin:0">Nothing has been deleted on this day.</p>';
+  $("trash-modal").hidden=false;
+}
+function restoreEntry(id){
+  const e=mergedDay(state.date).trash[id];if(!e)return;
+  queueWrite(state.date,{entries:{[id]:{...e,deleted:false,updatedAt:Date.now(),updatedBy:state.userName||""}}});
+  openTrash();showToast("Restored "+(e.name||"session")+".",null);
+}
+
+/* ---------- staff editor ---------- */
+let draftStaff=[];
+function openStaff(){draftStaff=staffList().map(s=>({...s}));drawStaffRows();$("s-err").hidden=true;$("staff-modal").hidden=false}
+function drawStaffRows(){$("staff-rows").innerHTML=draftStaff.map((s,i)=>'<div class="staffrow"><input id="staff-'+i+'" value="'+esc(s.name)+'" maxlength="30" aria-label="Staff name"><button type="button" class="btn ghost" data-up="'+i+'" aria-label="Move up"'+(i===0?" disabled":"")+'>↑</button><button type="button" class="btn danger ghost" data-rm="'+i+'">Remove</button></div>').join("")}
+function syncDraft(){draftStaff.forEach((s,i)=>{const el=$("staff-"+i);if(el)s.name=el.value})}
+async function saveStaff(ev){ev.preventDefault();syncDraft();
+  const list=draftStaff.map(s=>({id:s.id,name:s.name.trim()})).filter(s=>s.name);
+  if(!list.length){$("s-err").textContent="Keep at least one staff member.";$("s-err").hidden=false;return}
+  try{await configSave("main",{staff:list});state.staff=list;$("staff-modal").hidden=true;render()}
+  catch(e){$("s-err").textContent="Couldn't save staff. Check your connection and try again.";$("s-err").hidden=false}}
+
+/* ---------- performance ---------- */
+function perfRange(mode,a){const d=pdate(a);
+  if(mode==="day")return [a,a];
+  if(mode==="week"){const s=weekStart(a);return [s,addDays(s,6)]}
+  const y=d.getFullYear(),m=d.getMonth(),last=new Date(y,m+1,0).getDate();
+  if(mode==="month")return [dstr(new Date(y,m,1)),dstr(new Date(y,m,last))];
+  return d.getDate()<=15?[dstr(new Date(y,m,1)),dstr(new Date(y,m,15))]:[dstr(new Date(y,m,16)),dstr(new Date(y,m,last))]}
+function perfStep(dir){const a=state.perfAnchor,d=pdate(a),m=state.perfMode;
+  if(m==="day")state.perfAnchor=addDays(a,dir);
+  else if(m==="week")state.perfAnchor=addDays(a,7*dir);
+  else if(m==="month")state.perfAnchor=dstr(new Date(d.getFullYear(),d.getMonth()+dir,1));
+  else{const first=d.getDate()<=15;
+    if(dir>0)state.perfAnchor=first?dstr(new Date(d.getFullYear(),d.getMonth(),16)):dstr(new Date(d.getFullYear(),d.getMonth()+1,1));
+    else state.perfAnchor=first?dstr(new Date(d.getFullYear(),d.getMonth()-1,16)):dstr(new Date(d.getFullYear(),d.getMonth(),1))}
+  loadPerf()}
+function perfLabel(mode,[s,e]){if(mode==="day")return longDateY(s);const ds=pdate(s);
+  if(mode==="month")return ds.toLocaleDateString("en-PH",{month:"long",year:"numeric"});
+  if(mode==="cutoff")return "Cutoff "+ds.toLocaleDateString("en-PH",{month:"short"})+" "+ds.getDate()+"–"+pdate(e).getDate()+", "+ds.getFullYear();
+  return "Week of "+shortDate(s)+" – "+shortDate(e)+", "+pdate(e).getFullYear()}
+let perfSeq=0;
+async function loadPerf(){const mode=state.perfMode,range=perfRange(mode,state.perfAnchor);
+  $("perf-mode").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.mode===mode)));
+  $("perf-label").textContent=perfLabel(mode,range);
+  if(!state.token){drawPerf(range,[]);return}
+  const seq=++perfSeq;$("view-perf").classList.add("loading");
+  try{const r=await rpcAuthed("sched_load",{p_from:range[0],p_to:range[1]});
+    if(seq!==perfSeq)return;applyConfig(r);const days=[];for(let d=range[0];d<=range[1];d=addDays(d,1))days.push(Object.assign({date:d},buildDay(r,d)));drawPerf(range,days)}
+  catch(e){if(seq!==perfSeq)return;$("perf-table").innerHTML='<tbody><tr class="emptyrow"><td>Couldn\'t load the numbers. Tap Refresh to try again.</td></tr></tbody>'}
+  $("view-perf").classList.remove("loading")}
+function drawPerf(range,days){
+  const stats={},perDay={},bySvc={},byAddon={},needle={},needleCols={},earn={};let unpaidCount=0;
+  const ensure=id=>stats[id]||(stats[id]={clients:0,mins:0,d30:0,d60:0,d90:0,missed:0});
+  staffList().forEach(s=>ensure(s.id));
+  for(const day of days){const date=day.date;perDay[date]=perDay[date]||{};
+    for(const e of Object.values(mergedDay(date,day).entries)){
+      if(!e||e.kind!=="client")continue;const s=ensure(e.staff);
+      if(!counts(e)){s.missed++;continue}
+      s.clients++;s.mins+=e.dur;s["d"+e.dur]=(s["d"+e.dur]||0)+1;perDay[date][e.staff]=(perDay[date][e.staff]||0)+1;
+      const sv=serviceLabel(e)||"No service chosen";const b=bySvc[sv]||(bySvc[sv]={n:0,rev:0,priced:true});b.n++;
+      const p=e.serviceId?mainPrice(e):null;
+      if(e.paid){if(typeof p==="number")b.rev+=p;else b.priced=false}
+      // add-ons and needling
+      const by=(e.needlingBy&&e.needlingBy.length)?e.needlingBy:[e.staff];
+      for(const a of (e.addons||[])){ if(!a||!(a.qty>0))continue;
+        const ab=byAddon[a.id]||(byAddon[a.id]={name:addonName(a),unit:a.unit||"each",qty:0,rev:0,priced:true});ab.qty+=a.qty;
+        if(e.paid){if(typeof a.price==="number")ab.rev+=a.price*a.qty;else ab.priced=false}
+        if(a.areas>0){ needleCols[a.id]=needleCols[a.id]||{name:addonName(a),unit:a.unit||"area",areas:a.areas};
+          for(const who of by){const r=needle[who]||(needle[who]={});r[a.id]=(r[a.id]||0)+a.qty;r._areas=(r._areas||0)+a.qty*a.areas;r._clients=(r._clients||0)+(r._seen===e?0:1);r._seen=e}}
+      }
+      // earnings (paid sessions only): split the bill between main therapist and needling therapist(s)
+      if(!e.paid){unpaidCount++;continue}
+      const bl=billOf(e),ratio=bl.sub?bl.total/bl.sub:0;
+      const E=id=>earn[id]||(earn[id]={svc:0,needle:0,disc:0,net:0,tip:0});
+      const give=(id,amt,key)=>{if(!amt)return;const x=E(id);x[key]+=amt;x.net+=amt*ratio;x.disc+=amt*(1-ratio)};
+      give(e.staff,mainPrice(e),"svc");
+      for(const a of (e.addons||[])){if(!a||!(a.qty>0))continue;
+        const p=(typeof a.price==="number"?a.price:Number((state.services[a.id]||{}).price)||0)*a.qty;
+        if(a.areas>0)for(const w of by)give(w,p/by.length,"needle");else give(e.staff,p,"svc")}
+      if(bl.tip)E(e.staff).tip+=bl.tip;
+    }}
+  const ids=Object.keys(stats),order=[...staffList().map(s=>s.id),...ids.filter(i=>!staffList().some(s=>s.id===i))];
+  const tot=order.reduce((a,i)=>{const s=stats[i];a.c+=s.clients;a.m+=s.mins;a.x+=s.missed;return a},{c:0,m:0,x:0});
+  const max=Math.max(1,...order.map(i=>stats[i].clients));
+  const top=tot.c?order.filter(i=>stats[i].clients===max).map(staffName):[];
+  $("perf-stats").innerHTML='<div class="stat"><small>Clients seen</small><b>'+tot.c+'</b></div><div class="stat"><small>Therapy hours</small><b>'+(tot.m/60).toFixed(1)+'</b></div><div class="stat"><small>Not counted</small><b>'+tot.x+'</b></div><div class="stat"><small>Most clients</small><b style="font-size:20px">'+(top.length?esc(top.join(", ")):"—")+'</b></div>';
+  const sum=k=>order.reduce((a,i)=>a+stats[i][k],0);
+  let t='<thead><tr><th>Therapist</th><th class="num">Clients</th><th class="barcell"></th><th class="num">30 min</th><th class="num">1 hr</th><th class="num">1.5 hr</th><th class="num">Hours</th><th class="num">Not counted</th></tr></thead><tbody>';
+  for(const id of order){const s=stats[id];
+    t+='<tr><td><b>'+esc(staffName(id))+'</b></td><td class="num"><b>'+s.clients+'</b></td><td class="barcell"><div class="bar"><i style="width:'+(s.clients/max*100)+'%"></i></div></td><td class="num">'+s.d30+'</td><td class="num">'+s.d60+'</td><td class="num">'+s.d90+'</td><td class="num">'+(s.mins/60).toFixed(1)+'</td><td class="num">'+s.missed+'</td></tr>'}
+  t+='</tbody><tfoot><tr><td>Total</td><td class="num">'+tot.c+'</td><td></td><td class="num">'+sum("d30")+'</td><td class="num">'+sum("d60")+'</td><td class="num">'+sum("d90")+'</td><td class="num">'+(tot.m/60).toFixed(1)+'</td><td class="num">'+tot.x+'</td></tr></tfoot>';
+  $("perf-table").innerHTML=t;
+  // earnings per therapist (admins only)
+  $("perf-earn-panel").hidden=state.role!=="admin";
+  if(state.role==="admin"){
+    const eo=[...order,...Object.keys(earn).filter(i=>!order.includes(i))];
+    const Z={svc:0,needle:0,disc:0,net:0,tip:0};
+    let eh='<thead><tr><th>Therapist</th><th class="num">Clients</th><th class="num">Services</th><th class="num">Needling</th><th class="num">Discounts</th><th class="num">Earnings</th><th class="num">Tips</th><th class="num">Earnings + tips</th></tr></thead><tbody>';
+    for(const i of eo){const x=earn[i]||Z,n=(stats[i]||{}).clients||0;
+      if(i==="other"&&!earn.other)continue;
+      eh+='<tr><td><b>'+esc(i==="other"?"Other":staffName(i))+'</b></td><td class="num">'+n+'</td><td class="num">'+money(x.svc)+'</td><td class="num">'+(x.needle?money(x.needle):'<span class="muted">—</span>')+'</td><td class="num">'+(x.disc>0.004?'−'+money(x.disc):'<span class="muted">—</span>')+'</td><td class="num"><b>'+money(x.net)+'</b></td><td class="num">'+(x.tip?money(x.tip):'<span class="muted">—</span>')+'</td><td class="num"><b>'+money(x.net+x.tip)+'</b></td></tr>'}
+    const S=k=>Object.values(earn).reduce((a,x)=>a+x[k],0);
+    eh+='</tbody><tfoot><tr><td>Total</td><td class="num">'+tot.c+'</td><td class="num">'+money(S("svc"))+'</td><td class="num">'+money(S("needle"))+'</td><td class="num">−'+money(S("disc"))+'</td><td class="num">'+money(S("net"))+'</td><td class="num">'+money(S("tip"))+'</td><td class="num">'+money(S("net")+S("tip"))+'</td></tr></tfoot>';
+    $("perf-earn").innerHTML=eh;
+    const pu=$("perf-earn-unpaid");pu.hidden=!unpaidCount;pu.textContent=unpaidCount+(unpaidCount===1?" booked session is":" booked sessions are")+" not marked paid yet, so "+(unpaidCount===1?"it isn't":"they aren't")+" included.";
+  }
+  const sv=Object.entries(bySvc).sort((a,b)=>b[1].n-a[1].n), ad=Object.values(byAddon).sort((a,b)=>b.qty-a.qty);
+  const val=(rev,priced)=>rev?peso(rev)+(priced?"":" +"):'<span class="muted">—</span>';
+  $("perf-svc").innerHTML='<thead><tr><th>Service</th><th class="num">Count</th><th class="num">Paid value</th></tr></thead><tbody>'+
+    '<tr><td colspan="3" class="subhead">Main services</td></tr>'+
+    (sv.length?sv.map(([n,b])=>'<tr><td><b>'+esc(n)+'</b></td><td class="num">'+b.n+' clients</td><td class="num">'+val(b.rev,b.priced)+'</td></tr>').join(""):'<tr class="emptyrow"><td colspan="3">No clients in this period yet.</td></tr>')+
+    '<tr><td colspan="3" class="subhead">Additional services</td></tr>'+
+    (ad.length?ad.map(b=>'<tr><td><b>'+esc(b.name)+'</b></td><td class="num">'+b.qty+' '+esc(b.qty===1?b.unit:plural(b.unit))+'</td><td class="num">'+val(b.rev,b.priced)+'</td></tr>').join(""):'<tr class="emptyrow"><td colspan="3">No additional services in this period.</td></tr>')+'</tbody>';
+  // dry needling by staff
+  const cols=Object.entries(needleCols);
+  // include current needling add-ons even if unused, so the columns are stable
+  for(const s of serviceList("addon"))if(s.areas>0&&!needleCols[s.id])cols.push([s.id,{name:s.name,unit:s.unit||"area",areas:s.areas}]);
+  const nOrder=[...staffList().map(s=>s.id),...Object.keys(needle).filter(i=>!staffList().some(s=>s.id===i)&&i!=="other")];
+  nOrder.push("other");
+  const nName=i=>i==="other"?"Other":staffName(i);
+  let nh='<thead><tr><th>Performed by</th>'+cols.map(([,c])=>'<th class="num">'+esc(c.name)+'<br><span style="text-transform:none;letter-spacing:0;font-weight:500">'+c.areas+(c.areas===1?" area":" areas")+' each</span></th>').join("")+'<th class="num">Total areas</th><th class="num">Clients</th></tr></thead><tbody>';
+  if(!cols.length)nh+='<tr class="emptyrow"><td colspan="3">No needling services set up yet. In Services, add an additional service and set "Needling areas each".</td></tr>';
+  else for(const i of nOrder){const r=needle[i]||{};if(i==="other"&&!needle.other)continue;
+    nh+='<tr><td><b>'+esc(nName(i))+'</b></td>'+cols.map(([id])=>'<td class="num">'+(r[id]||'<span class="muted">·</span>')+'</td>').join("")+'<td class="num"><b>'+(r._areas||0)+'</b></td><td class="num">'+(r._clients||0)+'</td></tr>'}
+  if(cols.length){const tA=nOrder.reduce((a,i)=>a+((needle[i]||{})._areas||0),0);
+    nh+='</tbody><tfoot><tr><td>Total</td>'+cols.map(([id])=>'<td class="num">'+nOrder.reduce((a,i)=>a+((needle[i]||{})[id]||0),0)+'</td>').join("")+'<td class="num">'+tA+'</td><td></td></tr></tfoot>'}
+  else nh+='</tbody>';
+  $("perf-needle").innerHTML=nh;
+  const panel=$("perf-days-panel");
+  if(state.perfMode==="day"){panel.hidden=true;return}
+  panel.hidden=false;
+  let dd='<thead><tr><th>Date</th>'+order.map(i=>'<th class="num">'+esc(staffName(i))+'</th>').join("")+'<th class="num">Total</th></tr></thead><tbody>';
+  for(let d=range[0];d<=range[1];d=addDays(d,1)){const row=perDay[d]||{},s=order.reduce((a,i)=>a+(row[i]||0),0);
+    dd+='<tr><td>'+pdate(d).toLocaleDateString("en-PH",{weekday:"short",month:"short",day:"numeric"})+'</td>'+order.map(i=>'<td class="num">'+(row[i]||'<span class="muted">·</span>')+'</td>').join("")+'<td class="num"><b>'+s+'</b></td></tr>'}
+  $("perf-days").innerHTML=dd+'</tbody>';
+}
+
+/* ---------- accounts & sign-in (checked by the server) ---------- */
+const ROLE_LABEL={admin:"Admin",receptionist:"Receptionist",staff:"Staff"};
+const ROLE_SUB={admin:"Sees everything",receptionist:"Schedule, services and daily report",staff:"Schedule only · view only"};
+const ROLE_TABS={admin:["cal","svc","report","perf","colors","users"],receptionist:["cal","svc","report"],staff:["cal"]};
+const SESSION_KEY="stretchlab-session-v2";
+let pendingAdmin=null,usrEditing=null,usrDelArm=null;
+function userList(){return Object.entries(state.users||{}).filter(([,u])=>u&&u.name).map(([id,u])=>({id,...u})).sort((a,b)=>a.name.localeCompare(b.name))}
+function findUser(name){const n=name.trim().toLowerCase();return userList().find(u=>u.name.trim().toLowerCase()===n)}
+function computePerms(){
+  const r=state.role;
+  state.canWrite=r==="admin"||r==="receptionist";
+  state.canConfig=r==="admin";
+  state.canServices=r==="admin"||r==="receptionist";
+}
+function applyRoleNav(){
+  const allowed=ROLE_TABS[state.role]||[];
+  document.querySelectorAll(".nav [data-tab]").forEach(b=>b.hidden=!allowed.includes(b.dataset.tab));
+}
+function saveSession(token){try{sessionStorage.setItem(SESSION_KEY,JSON.stringify({token,at:Date.now()}))}catch(e){}}
+function readSession(){try{return JSON.parse(sessionStorage.getItem(SESSION_KEY)||"null")}catch(e){return null}}
+function clearSession(){try{sessionStorage.removeItem(SESSION_KEY)}catch(e){}}
+function showGate(msgText){
+  $("shell").hidden=true;$("pin-gate").hidden=true;$("gate").hidden=false;
+  const msg=$("gate-msg"),fields=$("login-fields");
+  if(!sb){fields.hidden=true;msg.hidden=false;
+    msg.textContent=!window.supabase?"Couldn't load the app. Check your internet connection and reload the page.":"This app isn't connected to its database yet. Add the Supabase address and key at the top of index.html (see the setup guide).";return}
+  msg.hidden=!msgText;msg.textContent=msgText||"";fields.hidden=false;
+  setTimeout(()=>{if($("gate").hidden)return;($("login-name").value?$("login-pass"):$("login-name")).focus()},0);
+}
+function askPin(u){
+  pendingAdmin=u;
+  $("gate").hidden=true;$("shell").hidden=true;$("pin-gate").hidden=false;
+  $("pin-who").textContent="Signed in as "+u.name+". Enter your security PIN to open the admin view.";
+  $("pin-input").value="";$("pin-err").hidden=true;setTimeout(()=>$("pin-input").focus(),0);
+}
+function signIn(u){
+  state.userId=u.id;state.role=u.role;state.userName=u.name;pendingAdmin=null;
+  computePerms();applyRoleNav();startLive();
+  $("gate").hidden=true;$("pin-gate").hidden=true;$("shell").hidden=false;
+  if(!(ROLE_TABS[state.role]||[]).includes(state.tab))setTab("cal");else setTab(state.tab);
+  subscribeDay();if(state.view==="week")subscribeWeek();
+  if(state.canWrite){if(!state.restored){state.restored=true;restoreUnsaved()}resumeWaiting()}
+  render();
+}
+function clearLocal(){state.userId=null;state.role=null;state.userName="";state.token=null;pendingAdmin=null;state.users={};computePerms()}
+function signOut(msg){
+  if(noteDirty)saveNote();
+  const t=state.token;clearSession();clearLocal();
+  if(t&&sb)sb.rpc("sched_logout",{p_token:t}).then(()=>{},()=>{});
+  closeModal();$("staff-modal").hidden=true;$("trash-modal").hidden=true;
+  $("login-pass").value="";$("login-err").hidden=true;showGate(typeof msg==="string"?msg:"");
+}
+let signedOutShown=false;
+function onSignedOutRemotely(){
+  if(signedOutShown||!state.token)return;signedOutShown=true;
+  clearSession();clearLocal();
+  showGate("You've been signed out. Sign in again. Any changes you made are kept on this device and will save after you sign in.");
+  setTimeout(()=>signedOutShown=false,1000);
+}
+function onPinRequired(){if(state.token&&state.role==="admin"&&!pendingAdmin)askPin({id:state.userId,name:state.userName,role:"admin"})}
+async function doLogin(ev){
+  ev.preventDefault();const err=$("login-err");err.hidden=true;
+  const name=$("login-name").value,pass=$("login-pass").value;
+  if(!name.trim()||!pass){err.textContent="Enter your name and password.";err.hidden=false;return}
+  const btn=ev.submitter||$("login-form").querySelector("button[type=submit]");btn.disabled=true;
+  try{
+    const r=await rpc("sched_login",{p_name:name,p_pass:pass});
+    if(!r.ok){
+      err.textContent=r.noUsers?"No accounts exist yet. The owner needs to run Step 2 of the setup guide in Supabase."
+        :r.locked?"Too many wrong tries for this name. Wait 5 minutes, then try again."
+        :"That name and password don't match. Check the spelling and try again.";
+      err.hidden=false;$("login-pass").select();return;
+    }
+    $("login-pass").value="";state.token=r.token;saveSession(r.token);
+    if(r.needsPin)askPin(r.user);else signIn(r.user);
+  }catch(e){err.textContent=friendly(e);err.hidden=false}
+  finally{btn.disabled=false}
+}
+async function doPin(ev){
+  ev.preventDefault();const u=pendingAdmin;if(!u)return;
+  const pin=$("pin-input").value.trim(),err=$("pin-err");
+  try{
+    const r=await rpc("sched_verify_pin",{p_token:state.token,p_pin:pin});
+    if(r.ok){signIn(u);return}
+    if(r.signedOut){signOut("Wrong PIN entered 3 times. You've been signed out.");return}
+    err.textContent="Wrong PIN. "+r.left+(r.left===1?" try":" tries")+" left.";err.hidden=false;$("pin-input").select();
+  }catch(e){err.textContent=friendly(e);err.hidden=false}
+}
+async function resumeSession(){
+  const s=readSession();
+  if(!s||!s.token||!sb){showGate();return}
+  try{
+    const r=await rpc("sched_me",{p_token:s.token});
+    if(!r.ok){clearSession();showGate();return}
+    state.token=s.token;
+    if(r.user.role==="admin"&&!r.pinOk)askPin(r.user);else signIn(r.user);
+  }catch(e){showGate(e.code==="unavailable"?"Can't reach the server right now. Check your internet, then sign in.":"")}
+}
+
+/* accounts page */
+function renderUsers(){
+  const can=state.canConfig;
+  $("usr-form").hidden=!can;$("users-notice").hidden=true;
+  const list=userList(),admins=list.filter(u=>u.role==="admin").length;
+  let h='<thead><tr><th>Name</th><th>Access</th><th>Added</th>'+(can?'<th></th>':'')+'</tr></thead><tbody>';
+  if(!list.length)h+='<tr class="emptyrow"><td colspan="4">Loading accounts…</td></tr>';
+  for(const u of list){const me=u.id===state.userId,lastAdmin=u.role==="admin"&&admins<=1;
+    h+='<tr class="'+(usrEditing===u.id?"editing":"")+'"><td><b>'+esc(u.name)+'</b>'+(me?' <span class="muted">(you)</span>':'')+'</td><td><span class="rolepill '+u.role+'">'+ROLE_LABEL[u.role]+'</span></td><td class="muted">'+(u.createdAt?new Date(u.createdAt).toLocaleDateString("en-PH",{month:"short",day:"numeric",year:"numeric"}):"")+'</td>'+
+      (can?'<td class="acts"><button type="button" class="btn sm" data-uedit="'+esc(u.id)+'">Edit</button>'+(me||lastAdmin?'':'<button type="button" class="btn sm danger ghost'+(usrDelArm===u.id?" confirm":"")+'" data-udel="'+esc(u.id)+'">'+(usrDelArm===u.id?"Tap again to delete":"Delete")+'</button>')+'</td>':'')+'</tr>'}
+  $("usr-table").innerHTML=h+'</tbody>';
+}
+function syncUsrRole(){
+  const admin=$("usr-role").value==="admin",cur=usrEditing&&state.users[usrEditing];
+  $("usr-pin-wrap").hidden=!admin;
+  $("usr-pin-label").textContent=cur&&cur.hasPin?"New PIN (blank = keep)":"Security PIN (4–8 digits)";
+}
+function resetUsrForm(){usrEditing=null;$("usr-name").value="";$("usr-role").value="staff";$("usr-pass").value="";$("usr-pin").value="";
+  $("usr-pass-label").textContent="Password";$("usr-form-title").textContent="Add an account";$("usr-save").textContent="Add account";$("usr-cancel").hidden=true;$("usr-err").hidden=true;syncUsrRole()}
+async function saveUser(ev){
+  ev.preventDefault();if(!state.canConfig)return;
+  const err=$("usr-err"),bad=m=>{err.textContent=m;err.hidden=false};err.hidden=true;
+  const name=$("usr-name").value.trim(),role=$("usr-role").value,pass=$("usr-pass").value,pin=$("usr-pin").value.trim();
+  const cur=usrEditing?state.users[usrEditing]:null;
+  if(!name)return bad("Enter the person's name.");
+  if(!cur&&pass.length<4)return bad("Use a password of at least 4 characters.");
+  if(cur&&pass&&pass.length<4)return bad("Use a password of at least 4 characters, or leave it blank to keep the current one.");
+  if(role==="admin"&&(pin||!(cur&&cur.hasPin))&&!/^\d{4,8}$/.test(pin))return bad("Admins need a security PIN of 4 to 8 digits.");
+  const btn=$("usr-save");btn.disabled=true;
+  try{
+    await rpcAuthed("sched_user_save",{p_id:usrEditing||null,p_name:name,p_role:role,p_pass:pass||null,p_pin:role==="admin"&&pin?pin:null});
+    resetUsrForm();await loadDay();renderUsers();
+  }catch(e){bad(friendly(e))}
+  btn.disabled=false;
+}
+async function deleteUser(id){
+  if(usrDelArm!==id){usrDelArm=id;renderUsers();return}
+  usrDelArm=null;
+  try{await rpcAuthed("sched_user_delete",{p_id:id});const c={...state.users};delete c[id];state.users=c;renderUsers()}
+  catch(e){$("usr-err").textContent=friendly(e);$("usr-err").hidden=false}
+}
+
+/* ---------- events ---------- */
+function goDate(s){if(!s)return;if(noteDirty)saveNote();moneyDelArm.exp=moneyDelArm.sav=null;state.date=s;state.noticeMsg="";subscribeDay();if(state.view==="week")subscribeWeek()}
+function setView(v){state.view=v;if(v==="week")subscribeWeek();else stopWeek();render()}
+$("prev").onclick=()=>goDate(addDays(state.date,state.view==="week"?-7:-1));
+$("next").onclick=()=>goDate(addDays(state.date,state.view==="week"?7:1));
+$("today").onclick=()=>goDate(todayStr());
+$("date-pick").onchange=e=>goDate(e.target.value);
+$("view-mode").onclick=ev=>{const b=ev.target.closest("button");if(b)setView(b.dataset.view)};
+$("week-table").onclick=ev=>{const b=ev.target.closest("[data-day]");if(b){state.date=b.dataset.day;setView("day");subscribeDay()}};
+$("grid").addEventListener("click",ev=>{
+  if(Date.now()-dragEndAt<350)return;
+  const hp=ev.target.closest(".hp");
+  if(hp&&state.canWrite){const cur=mergedDay(state.date).status[hp.dataset.for]||"";
+    queueWrite(state.date,{status:{[hp.dataset.for]:cur===hp.dataset.st?"":hp.dataset.st}});return}
+  const ent=ev.target.closest(".entry");if(ent){openEntry(ent.dataset.id);return}
+  const slot=ev.target.closest(".slot");if(slot&&state.canWrite)openEntry(null,{staff:slot.parentElement.dataset.staff,start:Number(slot.dataset.start)});
+});
+$("m-paid").onclick=togglePaid;
+$("pay-form").onsubmit=submitPay;
+$("pay-close").onclick=$("pay-cancel").onclick=closePay;
+$("pay-modal").addEventListener("mousedown",e=>{if(e.target===$("pay-modal"))closePay()});
+$("pay-methods").onclick=ev=>{const b=ev.target.closest("[data-m]");if(!b)return;payPick=b.dataset.m;$("pay-methods").querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));$("pay-err").hidden=true;syncPay()};
+for(const id of ["pay-next-date","pay-next-note"]){$(id).addEventListener("input",()=>{$("pay-err").hidden=true;syncPay()});$(id).addEventListener("change",syncPay)}
+$("m-kind").onclick=ev=>{const b=ev.target.closest("button");if(!b||b.disabled)return;setKind(b.dataset.kind);
+  if(!M.original){M.color=b.dataset.kind==="note"?"orange":"reserved";drawColorSwatches()}drawAddons()};
+$("m-dur").onclick=ev=>{const b=ev.target.closest("button");if(b&&!b.disabled){M.dur=Number(b.dataset.dur);setSeg($("m-dur"),"dur",M.dur)}};
+$("m-color").onclick=ev=>{const b=ev.target.closest("button");if(b&&!b.disabled){M.color=b.dataset.v;setSeg($("m-color"),"v",M.color)}};
+$("m-service").onchange=()=>{const s=state.services[$("m-service").value];
+  if(s&&s.dur){const start=Number($("m-start").value);M.dur=start+s.dur<=DAY_END?s.dur:DAY_END-start;setSeg($("m-dur"),"dur",M.dur)}drawAddons()};
+$("m-addons").onclick=ev=>{const b=ev.target.closest("[data-addon]");if(!b||b.disabled)return;
+  const id=b.dataset.addon,q=Math.max(0,Math.min(20,(M.addons[id]||0)+Number(b.dataset.d)));M.addons[id]=q;
+  drawAddons()};
+$("m-needle-by").onchange=ev=>{const c=ev.target;if(c.type!=="checkbox")return;if(c.checked)M.needleBy.add(c.value);else M.needleBy.delete(c.value)};
+for(const id of ["m-disc","m-disc-type","m-tip"])$(id).addEventListener("input",()=>{updateBill();updatePaidUI()});
+$("rprev").onclick=()=>goDate(addDays(state.date,-1));
+$("rnext").onclick=()=>goDate(addDays(state.date,1));
+$("rtoday").onclick=()=>goDate(todayStr());
+$("rep-pick").onchange=e=>goDate(e.target.value);
+$("rep-tabs").onclick=ev=>{const b=ev.target.closest("[data-rt]");if(b){repTab=b.dataset.rt;renderReport()}};
+$("exp-form").onsubmit=ev=>addMoney("exp",ev);
+$("sav-form").onsubmit=ev=>addMoney("sav",ev);
+for(const t of ["exp-table","sav-table"])$(t).onclick=ev=>{const b=ev.target.closest("[data-mdel]");if(!b)return;
+  const [p,id]=b.dataset.mdel.split("|");
+  if(moneyDelArm[p]!==id){moneyDelArm[p]=id;renderReport();return}
+  moneyDelArm[p]=null;queueWrite(state.date,{[p==="exp"?"expenses":"savings"]:{[id]:null}})};
+$("day-note").addEventListener("input",()=>{noteDirty=true;$("day-note-msg").textContent="Unsaved changes";clearTimeout(noteTimer);noteTimer=setTimeout(saveNote,1500)});
+$("day-note").addEventListener("blur",saveNote);
+$("day-note-save").onclick=()=>{noteDirty=true;saveNote()};
+$("m-start").onchange=refreshDurButtons;
+$("entry-form").onsubmit=saveEntry;
+$("m-delete").onclick=deleteEntry;
+$("m-close").onclick=$("m-cancel").onclick=closeModal;
+$("modal").addEventListener("mousedown",e=>{if(e.target===$("modal"))closeModal()});
+$("edit-staff").onclick=openStaff;
+$("s-add").onclick=()=>{syncDraft();draftStaff.push({id:"s"+Date.now().toString(36),name:""});drawStaffRows();$("staff-"+(draftStaff.length-1)).focus()};
+$("staff-rows").onclick=ev=>{const rm=ev.target.closest("[data-rm]"),up=ev.target.closest("[data-up]");syncDraft();
+  if(rm){draftStaff.splice(Number(rm.dataset.rm),1);drawStaffRows()}
+  if(up){const i=Number(up.dataset.up);[draftStaff[i-1],draftStaff[i]]=[draftStaff[i],draftStaff[i-1]];drawStaffRows()}};
+$("staff-form").onsubmit=saveStaff;
+$("s-close").onclick=$("s-cancel").onclick=()=>$("staff-modal").hidden=true;
+$("save-status").onclick=()=>{if(state.failed.length)retryFailed()};
+$("trash-btn").onclick=openTrash;
+$("notes-table").onclick=ev=>{const r=ev.target.closest("[data-day]");if(r)openNoteDay(r.dataset.day)};
+$("nprev").onclick=()=>{const [y,m]=notesMonth.split("-").map(Number);notesMonth=dstr(new Date(y,m-2,1)).slice(0,7);loadNotes()};
+$("nnext").onclick=()=>{const [y,m]=notesMonth.split("-").map(Number);notesMonth=dstr(new Date(y,m,1)).slice(0,7);loadNotes()};
+$("ntoday").onclick=()=>openNoteDay(todayStr());
+$("note-form").onsubmit=saveDayNote;
+$("note-close").onclick=$("note-cancel").onclick=()=>closeNote(false);
+$("note-modal").addEventListener("mousedown",e=>{if(e.target===$("note-modal"))closeNote(false)});
+$("note-prev").onclick=()=>{if(noteDirtyNow()){$("note-err").textContent="Save or close this note before moving to another day.";$("note-err").hidden=false;return}openNoteDay(addDays(noteOpen.day,-1))};
+$("note-next").onclick=()=>{if(noteDirtyNow()){$("note-err").textContent="Save or close this note before moving to another day.";$("note-err").hidden=false;return}openNoteDay(addDays(noteOpen.day,1))};
+$("note-text").addEventListener("input",()=>{$("note-err").hidden=true;if(noteOpen){noteOpen.closeArmed=0;if(noteOpen.force){noteOpen.force=false;$("note-save").textContent="Save note"}}});
+$("trash-close").onclick=()=>$("trash-modal").hidden=true;
+$("trash-modal").addEventListener("mousedown",e=>{if(e.target===$("trash-modal"))$("trash-modal").hidden=true});
+$("trash-list").onclick=ev=>{const b=ev.target.closest("[data-restore]");if(b&&state.canWrite)restoreEntry(b.dataset.restore)};
+/* drag and drop to move a session */
+let drag=null,dragEndAt=0,toastTimer=null,lastUndo=null;
+function showToast(msg,undo){
+  $("toast-msg").textContent=msg;lastUndo=undo;$("toast-undo").hidden=!undo;$("toast").hidden=false;
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>{$("toast").hidden=true;lastUndo=null},8000);
+}
+$("toast-undo").onclick=()=>{if(lastUndo)lastUndo();lastUndo=null;$("toast").hidden=true};
+$("grid").addEventListener("pointerdown",ev=>{
+  const ent=ev.target.closest(".entry");
+  if(!ent||!state.canWrite||ev.button>0||state.view!=="day")return;
+  const day=mergedDay(state.date),e=day.entries[ent.dataset.id];if(!e)return;
+  const r=ent.getBoundingClientRect();
+  drag={id:ent.dataset.id,e,el:ent,x0:ev.clientX,y0:ev.clientY,x:ev.clientX,y:ev.clientY,grabX:ev.clientX-r.left,grabY:ev.clientY-r.top,w:r.width,h:r.height,
+    touch:ev.pointerType!=="mouse",started:false,target:null};
+  if(drag.touch)drag.timer=setTimeout(()=>{if(drag&&!drag.started)beginDrag()},350);
+});
+function beginDrag(){
+  const d=drag;d.started=true;state.dragging=true;document.body.classList.add("dragging");
+  const g=d.el.cloneNode(true);g.classList.add("dragghost");g.classList.remove("drag-src");
+  Object.assign(g.style,{left:(d.x-d.grabX)+"px",top:(d.y-d.grabY)+"px",width:d.w+"px",height:d.h+"px",right:"auto"});
+  document.body.appendChild(g);d.ghost=g;d.el.classList.add("drag-src");
+  if(navigator.vibrate)try{navigator.vibrate(15)}catch(e){}
+  moveDrag();
+}
+function moveDrag(){
+  const d=drag;d.ghost.style.left=(d.x-d.grabX)+"px";d.ghost.style.top=(d.y-d.grabY)+"px";
+  // auto-scroll the grid near its edges
+  const gw=$("gridwrap"),gr=gw.getBoundingClientRect(),edge=48;
+  if(d.y<gr.top+edge+60)gw.scrollTop-=12;else if(d.y>gr.bottom-edge)gw.scrollTop+=12;
+  if(d.x<gr.left+edge+120)gw.scrollLeft-=12;else if(d.x>gr.right-edge)gw.scrollLeft+=12;
+  const hit=document.elementFromPoint(d.x,d.y),col=hit&&hit.closest&&hit.closest("#grid .col");
+  if(!col){d.target=null;if(d.prev)d.prev.remove();d.prev=null;return}
+  const cr=col.getBoundingClientRect(),slotH=cr.height/SLOTS,durSlots=d.e.dur/STEP;
+  let slot=Math.round((d.y-d.grabY-cr.top)/slotH);slot=Math.max(0,Math.min(SLOTS-durSlots,slot));
+  const start=DAY_START+slot*STEP,staff=col.dataset.staff;
+  d.target={staff,start};
+  if(!d.prev||d.prev.parentElement!==col){if(d.prev)d.prev.remove();d.prev=document.createElement("div");d.prev.className="dropprev";col.appendChild(d.prev)}
+  const st=mergedDay(state.date).status[staff]||"";
+  d.prev.classList.toggle("bad",!!st);
+  d.prev.style.top=(slot*slotH)+"px";d.prev.style.height=(durSlots*slotH)+"px";
+  d.prev.textContent=fmtTime(start)+" · "+staffName(staff)+(st?" ("+(st==="off"?"day off":"absent")+")":"");
+}
+function endDrag(commit){
+  const d=drag;drag=null;clearTimeout(d&&d.timer);
+  if(!d||!d.started)return;
+  dragEndAt=Date.now();state.dragging=false;document.body.classList.remove("dragging");
+  if(d.ghost)d.ghost.remove();if(d.prev)d.prev.remove();d.el.classList.remove("drag-src");
+  const t=d.target,e=d.e;
+  if(commit&&t&&(t.staff!==e.staff||t.start!==e.start)){
+    const before={...e},moved={...e,staff:t.staff,start:t.start,deleted:false,updatedAt:Date.now(),updatedBy:state.userName||""};
+    queueWrite(state.date,{entries:{[d.id]:moved}});
+    const date=state.date;
+    showToast("Moved "+(e.name||"session")+" to "+staffName(t.staff)+" · "+fmtTime(t.start),()=>queueWrite(date,{entries:{[d.id]:{...before,updatedAt:Date.now()}}}));
+  }
+  render();
+}
+document.addEventListener("pointermove",ev=>{
+  if(!drag)return;drag.x=ev.clientX;drag.y=ev.clientY;
+  const dist=Math.hypot(ev.clientX-drag.x0,ev.clientY-drag.y0);
+  if(!drag.started){
+    if(drag.touch){if(dist>8){clearTimeout(drag.timer);drag=null}return}
+    if(dist<6)return;beginDrag();return;
+  }
+  moveDrag();
+});
+document.addEventListener("pointerup",()=>{if(drag)endDrag(true)});
+document.addEventListener("pointercancel",()=>{if(drag)endDrag(false)});
+document.addEventListener("touchmove",ev=>{if(drag&&drag.started)ev.preventDefault()},{passive:false});
+document.addEventListener("keydown",ev=>{if(ev.key==="Escape"&&drag)endDrag(false)});
+$("grid").addEventListener("contextmenu",ev=>{if(state.canWrite&&ev.target.closest(".entry"))ev.preventDefault()});
+
+/* sign-in + accounts */
+$("login-form").onsubmit=doLogin;
+$("pin-form").onsubmit=doPin;
+$("pin-no").onclick=signOut;
+$("signout").onclick=signOut;
+$("usr-form").onsubmit=saveUser;
+$("usr-role").onchange=syncUsrRole;
+$("usr-cancel").onclick=()=>{resetUsrForm();renderUsers()};
+$("usr-table").onclick=ev=>{const ed=ev.target.closest("[data-uedit]"),del=ev.target.closest("[data-udel]");
+  if(ed){const u=state.users[ed.dataset.uedit];if(!u)return;usrEditing=ed.dataset.uedit;usrDelArm=null;
+    $("usr-name").value=u.name;$("usr-role").value=u.role;$("usr-pass").value="";$("usr-pin").value="";
+    $("usr-pass-label").textContent="New password (blank = keep)";$("usr-form-title").textContent="Edit "+u.name;$("usr-save").textContent="Save changes";$("usr-cancel").hidden=false;$("usr-err").hidden=true;syncUsrRole();renderUsers();$("usr-name").focus()}
+  if(del)deleteUser(del.dataset.udel)};
+/* services page */
+$("svc-form").onsubmit=saveService;
+$("svc-cancel").onclick=()=>{resetSvcForm();renderServices()};
+$("svc-table").onclick=ev=>{const ed=ev.target.closest("[data-edit]"),del=ev.target.closest("[data-del]");
+  if(ed){const s=state.services[ed.dataset.edit];if(!s)return;svcEditing=ed.dataset.edit;svcDelArm=null;
+    $("svc-name").value=s.name;$("svc-type").value=s.type==="addon"?"addon":"main";$("svc-dur").value=String(s.dur||60);$("svc-price").value=s.price??"";
+    $("svc-unit").value=s.unit||"";$("svc-areas").value=String(s.areas||0);syncSvcType();
+    $("svc-form-title").textContent="Edit service";$("svc-save").textContent="Save changes";$("svc-cancel").hidden=false;$("svc-err").hidden=true;
+    renderServices();$("svc-name").focus()}
+  if(del)deleteService(del.dataset.del)};
+$("svc-addon-table").onclick=ev=>$("svc-table").onclick(ev);
+$("svc-type").onchange=syncSvcType;
+/* colors page */
+$("color-rows").addEventListener("input",ev=>{colorsDirty=true;$("color-msg").textContent="";
+  const m=ev.target.id.match(/^c[cl]-(\d+)$/);if(!m)return;const i=Number(m[1]);syncColorDraft();
+  const c=colorDraft[i],p=$("cp-"+i);if(p){p.style.background=c.bg;p.style.color=ink(c.bg);p.lastChild.textContent=c.label}});
+$("color-rows").addEventListener("change",()=>{colorsDirty=true;$("color-msg").textContent=""});
+$("color-rows").onclick=ev=>{const b=ev.target.closest("[data-rmc]");if(!b)return;syncColorDraft();colorDraft.splice(Number(b.dataset.rmc),1);colorsDirty=true;drawColorRows()};
+$("color-add").onclick=()=>{syncColorDraft();if(colorDraft.filter(c=>!c.builtin).length>=MAX_CUSTOM_COLORS)return;
+  colorDraft.push({id:uid("c"),builtin:false,order:100+Date.now()%100000,label:"New color",bg:"#6c8fd6",counts:true});colorsDirty=true;drawColorRows();
+  const i=colorDraft.length-1;$("cl-"+i).focus();$("cl-"+i).select()};
+$("color-save").onclick=saveColors;
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(!$("pay-modal").hidden){closePay();return}if(!$("note-modal").hidden){closeNote(false);return}closeModal();$("staff-modal").hidden=true;$("trash-modal").hidden=true}});
+function setTab(t){
+  if(state.role&&!(ROLE_TABS[state.role]||[]).includes(t))t="cal";
+  state.tab=t;
+  document.querySelectorAll(".nav button").forEach(b=>{if(b.dataset.tab===t)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
+  for(const v of ["cal","svc","report","notes","perf","colors","users"])$("view-"+v).hidden=v!==t;
+  if(t==="notes"){notesMonth=todayStr().slice(0,7);loadNotes().then(()=>openNoteDay(todayStr()))}
+  if(t==="perf")loadPerf();else if(t==="colors"){if(!colorsDirty)renderColors()}else{if(t==="svc")resetSvcForm();if(t==="users")resetUsrForm();render()}}
+document.querySelector(".nav").onclick=ev=>{const b=ev.target.closest("[data-tab]");if(b)setTab(b.dataset.tab)};
+$("perf-mode").onclick=ev=>{const b=ev.target.closest("button");if(b){state.perfMode=b.dataset.mode;loadPerf()}};
+$("pprev").onclick=()=>perfStep(-1);
+$("pnext").onclick=()=>perfStep(1);
+$("pnow").onclick=()=>{state.perfAnchor=todayStr();loadPerf()};
+$("prefresh").onclick=loadPerf;
+window.addEventListener("beforeunload",e=>{if(state.pending.length||state.failed.length||colorsDirty||noteDirtyNow()){e.preventDefault();e.returnValue=""}});
+setInterval(()=>{if(state.tab==="cal"&&state.view==="day"&&state.date===todayStr()&&$("modal").hidden)renderCalendar()},60000);
+
+/* ---------- start ---------- */
+resumeSession();
+})();
+</script>
+</body>
+</html>

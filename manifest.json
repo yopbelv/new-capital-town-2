@@ -1,0 +1,20 @@
+{
+  "name": "Stretch Lab Schedule \u00b7 NEW Capital Town 2",
+  "short_name": "Capital Town 2",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#eceee9",
+  "theme_color": "#2c5537",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
